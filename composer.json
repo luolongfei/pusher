@@ -1,0 +1,30 @@
+{
+    "name": "luolongfei/push_class",
+    "description": "给肖阿姨推送每日课程，或者特殊日子。",
+    "type": "project",
+    "require": {
+        "php": ">=7.1.0",
+        "ext-curl": "*",
+        "ext-openssl": "*",
+        "guzzlehttp/guzzle": "^6.3",
+        "monolog/monolog": "^1.24",
+        "bramus/monolog-colored-line-formatter": "~2.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "luolongfei",
+            "email": "mybsdc@gmail.com",
+            "homepage": "https://www.google.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Luolongfei\\Lib\\": "libs",
+            "Luolongfei\\App\\": "app"
+        },
+        "files": [
+            "app/helpers.php"
+        ]
+    }
+}
