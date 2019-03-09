@@ -67,8 +67,10 @@ class Curl
             $payload['query'] = $params;
         }
 
+        Log::info('GET请求：' . $url, $params);
         $request = self::getClient()->get($url, $payload);
         $body = (string)$request->getBody();
+        Log::notice('返回结果为：' . $body);
 
         return $body;
     }
@@ -88,8 +90,10 @@ class Curl
             $payload['form_params'] = $params;
         }
 
+        Log::info('POST请求：' . $url, $params);
         $request = self::getClient()->post($url, $payload);
         $body = (string)$request->getBody();
+        Log::notice('返回结果为：' . $body);
 
         return $body;
     }
