@@ -32,6 +32,17 @@ class Pusher
     }
 
     /**
+     * @return float
+     */
+    public static function LOVE()
+    {
+        $start = strtotime('2019-03-31');
+        $loveDayNum = ceil((time() - $start) / (24 * 3600));
+
+        return $loveDayNum;
+    }
+
+    /**
      * @return bool
      * @throws \Exception
      */
@@ -63,11 +74,11 @@ class Pusher
                         // 随机诗词
                         $poetryApi = [
                             'shuqing/aiqing',
-                            'shuqing/sinian',
+                            /*'shuqing/sinian',
                             'shuqing/gudu',
                             'renwu/nvzi',
                             'rensheng/lizhi',
-                            'rensheng/qingchun',
+                            'rensheng/qingchun',*/
                         ];
                         $poetry = Curl::get(sprintf('https://api.gushi.ci/%s.json', $poetryApi[mt_rand(0, count($poetryApi) - 1)]));
                         $poetry = json_decode($poetry, true);
@@ -79,7 +90,7 @@ class Pusher
                         }
 
                         $poetrySummary = sprintf(
-                            "标题里的这句诗词，取自%s写的《%s》, 分类于「%s」之下。\n\n%s\n\n报告完毕。可爱的肖阿姨开始上课吧啦啦啦~",
+                            "诗词取自%s写的《%s》, 分类于「%s」之下。\n\n%s\n\n报告完毕。可爱的肖阿姨开始上课吧啦啦啦~",
                             $poetry['author'],
                             $poetry['origin'],
                             $poetry['category'],
@@ -93,15 +104,14 @@ class Pusher
                     $second = bcmul('0.' . $second, 60);
 
                     $title = sprintf(
-                        '肖阿姨，该上「%s」课啦，距上课还有%s分%s秒。%s',
+                        '可爱的肖阿姨，该上「%s」课啦，距上课还有%s分%s秒。',
                         $class,
                         $minute < 0 ? 0 : $minute,
-                        $second < 10 ? '0' . $second : $second,
-                        $poetryContent
+                        $second < 10 ? '0' . $second : $second
                     );
                     $content = sprintf(
-                        "今天是%s\n%s\n来自肖阿姨屋的罗叔叔",
-                        self::getWeek(),
+                        "今天是罗叔叔和肖阿姨在一起的第%s天。你屋罗叔叔正在想肖阿姨。٩(๑^o^๑)۶\n%s\n来自爱肖阿姨的罗叔叔",
+                        self::LOVE(),
                         $poetrySummary
                     );
 
