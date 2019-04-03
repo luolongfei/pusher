@@ -111,7 +111,7 @@ class Pusher
                         $second < 10 ? '0' . $second : $second
                     );
                     $content = sprintf(
-                        "今天是罗叔叔和肖阿姨相识的第%s天，相爱的第%s天。你屋罗叔叔正在\n想你~\n%s\n来自爱肖阿姨的罗叔叔",
+                        "今天是罗叔叔和肖阿姨相识的第%s天，正式相爱的第%s天。你屋罗叔叔正在\n想你~\n%s\n来自爱肖阿姨的罗叔叔",
                         self::LOVE('2018-12-29'),
                         self::LOVE(),
                         $poetrySummary
