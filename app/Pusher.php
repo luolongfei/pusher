@@ -32,11 +32,12 @@ class Pusher
     }
 
     /**
+     * @param string $date
      * @return float
      */
-    public static function LOVE()
+    public static function LOVE($date = '2019-03-31')
     {
-        $start = strtotime('2019-03-31');
+        $start = strtotime($date);
         $loveDayNum = ceil((time() - $start) / (24 * 3600));
 
         return $loveDayNum;
@@ -110,7 +111,8 @@ class Pusher
                         $second < 10 ? '0' . $second : $second
                     );
                     $content = sprintf(
-                        "今天是罗叔叔和肖阿姨在一起的第%s天。你屋罗叔叔正在想肖阿姨。٩(๑^o^๑)۶\n%s\n来自爱肖阿姨的罗叔叔",
+                        "今天是罗叔叔和肖阿姨相识的第%s天，相爱的第%s天。你屋罗叔叔正在想肖阿姨。\n%s\n来自爱肖阿姨的罗叔叔",
+                        self::LOVE('2018-12-29'),
                         self::LOVE(),
                         $poetrySummary
                     );
