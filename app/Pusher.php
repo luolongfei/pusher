@@ -15,6 +15,16 @@ use Luolongfei\Lib\ServerChan;
 class Pusher
 {
     /**
+     * MEET_DATE
+     */
+    const MEET_DATE = '2018-12-29';
+
+    /**
+     * LOVE_DATE_START
+     */
+    const LOVE_DATE_START = '2019-03-31';
+
+    /**
      * @var Pusher
      */
     protected static $instance;
@@ -31,16 +41,11 @@ class Pusher
         return static::$instance;
     }
 
-    /**
-     * @param string $date
-     * @return float
-     */
-    public static function LOVE($date = '2019-03-31')
+    public static function getWeek()
     {
-        $start = strtotime($date);
-        $loveDayNum = ceil((time() - $start) / (24 * 3600));
+        $week = ['天', '一', '二', '三', '四', '五', '六']; // 0（表示星期天）到 6（表示星期六）
 
-        return $loveDayNum;
+        return '星期' . $week[date('w')];
     }
 
     /**
@@ -91,7 +96,7 @@ class Pusher
                         }
 
                         $poetrySummary = sprintf(
-                            "诗词取自%s写的《%s》, 分类于「%s」之下。\n\n%s\n\n报告完毕。可爱的肖阿姨开始上课吧啦啦啦~",
+                            "诗词取自%s写的《%s》, 分类于「%s」之下。\n\n%s\n\n报告完毕。肖可爱开始上课吧啦啦啦~",
                             $poetry['author'],
                             $poetry['origin'],
                             $poetry['category'],
@@ -105,14 +110,15 @@ class Pusher
                     $second = bcmul('0.' . $second, 60);
 
                     $title = sprintf(
-                        '可爱的肖阿姨，该上「%s」课啦，距上课还有%s分%s秒。',
+                        '肖可爱，该上「%s」课啦，距上课还有%s分%s秒。',
                         $class,
                         $minute < 0 ? 0 : $minute,
                         $second < 10 ? '0' . $second : $second
                     );
                     $content = sprintf(
-                        "今天是罗叔叔和肖阿姨相识的第%s天，正式相爱的第%s天。你屋罗叔叔正在\n想你~\n%s\n来自爱肖阿姨的罗叔叔",
-                        self::LOVE('2018-12-29'),
+                        "今天是师父和我屋肖可爱相识的第%s天，正式相爱的第%s天，第%s个小时。你屋师父正在\n想你~\n%s\nby 爱肖可爱的师父",
+                        self::LOVE(self::MEET_DATE),
+                        self::LOVE(self::LOVE_DATE_START, 'hour'),
                         self::LOVE(),
                         $poetrySummary
                     );
@@ -128,10 +134,26 @@ class Pusher
         return true;
     }
 
-    public static function getWeek()
+    /**
+     * @param string $date
+     * @param string $timeType hour|day
+     * @return float|string
+     */
+    public static function LOVE($date = '', $timeType = 'day')
     {
-        $week = ['天', '一', '二', '三', '四', '五', '六']; // 0（表示星期天）到 6（表示星期六）
+        $date = $date ?: self::LOVE_DATE_START;
+        $start = strtotime($date);
 
-        return '星期' . $week[date('w')];
+        $loveDayNum = '无穷大';
+        switch ($timeType) {
+            case 'hour':
+                $loveDayNum = ceil((time() - $start) / 3600);
+                break;
+            case 'day':
+                $loveDayNum = ceil((time() - $start) / (24 * 3600));
+                break;
+        }
+
+        return $loveDayNum;
     }
 }
