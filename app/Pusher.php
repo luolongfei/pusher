@@ -118,8 +118,8 @@ class Pusher
                     $content = sprintf(
                         "今天是师父和我屋肖可爱相识的第%s天，正式相爱的第%s天，第%s个小时。你屋师父正在\n想你~\n%s\nby 爱肖可爱的师父",
                         self::LOVE(self::MEET_DATE),
-                        self::LOVE(self::LOVE_DATE_START, 'hour'),
                         self::LOVE(),
+                        self::LOVE(self::LOVE_DATE_START, 'h'),
                         $poetrySummary
                     );
 
@@ -136,20 +136,20 @@ class Pusher
 
     /**
      * @param string $date
-     * @param string $timeType hour|day
+     * @param string $timeType h:hour|d:day
      * @return float|string
      */
-    public static function LOVE($date = '', $timeType = 'day')
+    public static function LOVE($date = '', $timeType = 'd')
     {
         $date = $date ?: self::LOVE_DATE_START;
         $start = strtotime($date);
 
         $loveDayNum = '无穷大';
         switch ($timeType) {
-            case 'hour':
+            case 'h':
                 $loveDayNum = ceil((time() - $start) / 3600);
                 break;
-            case 'day':
+            case 'd':
                 $loveDayNum = ceil((time() - $start) / (24 * 3600));
                 break;
         }
