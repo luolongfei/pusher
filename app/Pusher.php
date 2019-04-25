@@ -96,7 +96,7 @@ class Pusher
                         }
 
                         $poetrySummary = sprintf(
-                            "诗词取自%s写的《%s》, 分类于「%s」之下。\n\n%s\n\n报告完毕。肖可爱开始上课吧啦啦啦~",
+                            "诗词取自%s写的《%s》, 分类于「%s」之下。\n\n%s\n\n报告完毕。我肖阿姨开始上课吧啦啦啦~",
                             $poetry['author'],
                             $poetry['origin'],
                             $poetry['category'],
@@ -110,13 +110,13 @@ class Pusher
                     $second = bcmul('0.' . $second, 60);
 
                     $title = sprintf(
-                        '肖可爱，该上「%s」课啦，距上课还有%s分%s秒。',
+                        '肖阿姨，该上「%s」课啦，距上课还有%s分%s秒。',
                         $class,
                         $minute < 0 ? 0 : $minute,
                         $second < 10 ? '0' . $second : $second
                     );
                     $content = sprintf(
-                        "今天是师父和我屋肖可爱相识的第%s天，正式相爱的第%s天，第%s个小时。你屋师父正在\n想你~\n%s\nby 爱肖可爱的师父",
+                        "今天是师父和我屋肖阿姨相识的第%s天，正式相爱的第%s天，第%s个小时。你屋师父正在\n想你~\n%s\nby 爱肖阿姨的师父",
                         self::LOVE(self::MEET_DATE),
                         self::LOVE(),
                         self::LOVE(self::LOVE_DATE_START, 'h'),
