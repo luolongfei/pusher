@@ -43,7 +43,7 @@ function customize_error_handler()
 {
     if (!is_null($error = error_get_last())) {
         Log::error('程序意外终止', $error);
-        Mail::instance()->send('主人，程序意外终止', '具体情况我也不知道，请查看服务器日志定位问题。');
+//        Mail::instance()->send('主人，程序意外终止', '具体情况我也不知道，请查看服务器日志定位问题。');
     }
 }
 
