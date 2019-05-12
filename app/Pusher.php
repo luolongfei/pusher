@@ -94,7 +94,7 @@ class Pusher
 
         // 一直触发
         $messageHandler->setCustomHandler(function () {
-            Log::info('执行触发');
+            Log::info('执行触发，心跳检出');
             $friends = vbot('friends');
             $friend = $friends->getUsernameByRemarkName('机器人', false);
 
