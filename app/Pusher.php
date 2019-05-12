@@ -10,7 +10,18 @@ namespace Luolongfei\App;
 
 use Luolongfei\Lib\Log;
 use Luolongfei\Lib\Curl;
-use Luolongfei\Lib\ServerChan;
+use Luolongfei\Lib\Mail;
+
+use Hanson\Vbot\Foundation\Vbot as Robot;
+use Vbot\Blacklist\Blacklist;
+use Vbot\GuessNumber\GuessNumber;
+use Vbot\HotGirl\HotGirl;
+use Hanson\Vbot\Message\Text;
+use Illuminate\Support\Collection;
+use Hanson\Vbot\Message\Image;
+use Hanson\Vbot\Message\Emoticon;
+use Hanson\Vbot\Message\Video;
+use Hanson\Vbot\Message\Voice;
 
 class Pusher
 {
@@ -28,6 +39,25 @@ class Pusher
      * @var Pusher
      */
     protected static $instance;
+
+    /**
+     * @var Robot
+     */
+    protected static $robot;
+
+    /**
+     * @var array|mixed 微信机器人配置
+     */
+    private $config;
+
+    public function __construct($session = null)
+    {
+        $this->config = config('weChat');
+
+        if ($session) {
+            $this->config['session'] = $session;
+        }
+    }
 
     /**
      * @return Pusher
@@ -54,7 +84,146 @@ class Pusher
      */
     public function handle()
     {
-        $startHandleTime = time();
+        $weChat = self::robotInstance($this->config);
+
+        // 获取监听器实例
+        $observer = $weChat->observer;
+
+        // 获取消息处理器实例
+        $messageHandler = $weChat->messageHandler;
+
+        // 一直触发
+        $messageHandler->setCustomHandler(function () {
+            Log::info('执行触发');
+            $friends = vbot('friends');
+            $friend = $friends->getUsernameByRemarkName('机器人', false);
+
+            foreach (config('classes.' . date('w')) as $timeRange => $class) { // 只遍历当天的课程
+                $date = date('Y-m-d');
+                list($start, $end) = explode('-', $timeRange);
+
+                $fileName = str_replace(':', '_', $start);
+                if (is_repeated($fileName)) {
+                    usleep(500000);
+                    continue;
+                }
+
+                $startTime = strtotime($date . ' ' . $start);
+                $endTime = strtotime($date . ' ' . $end);
+                $now = time();
+
+                if ($now <= $startTime && ($startTime - $now) <= config('inAdvance') && $class) { // 提前几分钟推送
+                    try {
+                        // 随机诗词
+                        $poetryApi = [
+                            'shuqing/aiqing',
+                        ];
+                        $poetry = Curl::get(sprintf('https://api.gushi.ci/%s.json', $poetryApi[mt_rand(0, count($poetryApi) - 1)]));
+                        $poetry = json_decode($poetry, true);
+
+                        $poetrySummary = '';
+                        $poetryContent = isset($poetry['content']) ? $poetry['content'] : '';
+                        if (!$poetryContent) {
+                            throw new \Exception('诗词接口返回的数据异常');
+                        }
+
+                        $poetrySummary = sprintf(
+                            "啊，想起%s曾经写过一首诗叫《%s》, 是关于爱情的。\n\n%s\n\n念完了，我肖阿姨开始上课吧哈哈哈，愿此刻有个好心情~",
+                            $poetry['author'],
+                            $poetry['origin'],
+                            $poetryContent
+                        );
+                    } catch (\Exception $e) {
+                        Log::error('获取随机诗词出错：' . $e->getMessage());
+                    }
+
+                    list($minute, $second) = explode('.', bcdiv($startTime - time(), 60, 2));
+                    $second = bcmul('0.' . $second, 60);
+
+                    $content = sprintf(
+                        '该上「%s」课啦，距上课还有%s分%s秒。',
+                        $class,
+                        $minute < 0 ? 0 : $minute,
+                        $second < 10 ? '0' . $second : $second
+                    );
+                    $content .= sprintf(
+                        "\n\n今天是师父和我屋肖阿姨相识的第%s天，正式相爱的第%s天，第%s个小时。\n\n%s",
+                        self::LOVE(self::MEET_DATE),
+                        self::LOVE(),
+                        self::LOVE(self::LOVE_DATE_START, 'h'),
+                        $poetrySummary
+                    );
+
+                    $rt = Text::send($friend, $content);
+
+                    if ($rt === false) {
+                        Log::error('消息发送失败');
+                        Mail::instance()->send('主人，消息推送失败', "消息内容：\n" . (string)$content);
+                    }
+
+                    create_file($fileName, $rt);
+                }
+            }
+
+            usleep(500000); // 防止执行过快，内存占用过高
+        });
+
+        // 收到消息时触发
+        $messageHandler->setHandler(function (Collection $message) {
+            /*try {
+                if ($message['type'] === 'recall') {
+                    Text::send('filehelper', $message['content'] . ' : ' . $message['origin']['content']);
+                    if ($message['origin']['type'] === 'image') {
+                        Image::send('filehelper', $message['origin']);
+                    } else if ($message['origin']['type'] === 'emoticon') {
+                        Emoticon::send('filehelper', $message['origin']);
+                    } else if ($message['origin']['type'] === 'video') {
+                        Video::send('filehelper', $message['origin']);
+                    } else if ($message['origin']['type'] === 'voice') {
+                        Voice::send('filehelper', $message['origin']);
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error('收到消息时触发错误: ', $e->getMessage());
+            }*/
+        });
+
+        /**
+         * 免扫码成功监听器
+         */
+        $observer->setReLoginSuccessObserver(function () {
+            Log::notice('免扫码登录成功');
+            Mail::instance()->send('主人，免扫码登录成功，服务已恢复', '免扫码登录成功，说明服务已经恢复，不用再扫码登录了。');
+        });
+
+        /**
+         * 二维码监听器
+         * 在登录时会出现二维码需要扫码登录。而这个二维码链接也将传到二维码监听器中。
+         */
+        $observer->setQrCodeObserver(function ($qrCodeUrl) {
+//            Log::info($qrCodeUrl);
+        });
+
+        /**
+         * 程序退出监听器
+         */
+        $observer->setExitObserver(function () {
+            Log::warning('微信机器人被挂起，已退出');
+            Mail::instance()->send('主人，微信机器人被挂起，已退出', '微信机器人被挂起，已退出，可能需要重新扫码登录。请登录服务器确认具体情况。');
+        });
+
+        /**
+         * 异常监听器
+         * 当接收消息异常时，当系统判断为太久没从手机端打开微信时，则急需打开，时间过久将断开。
+         */
+        $observer->setNeedActivateObserver(function () {
+            Log::warning('太久没从手机端打开微信，急需打开，时间过久将断开');
+            Mail::instance()->send('主人，太久没从手机端打开微信，急需打开，时间过久将断开', '太久没从手机端打开微信，急需打开，时间过久将断开。快打开手机上的微信。');
+        });
+
+        $weChat->server->serve();
+
+        /*$startHandleTime = time();
 
         while (true) {
             if ((time() - $startHandleTime) > 1800) { // 每次循环半小时，挂起后由Supervisor重新拉起
@@ -80,11 +249,6 @@ class Pusher
                         // 随机诗词
                         $poetryApi = [
                             'shuqing/aiqing',
-                            /*'shuqing/sinian',
-                            'shuqing/gudu',
-                            'renwu/nvzi',
-                            'rensheng/lizhi',
-                            'rensheng/qingchun',*/
                         ];
                         $poetry = Curl::get(sprintf('https://api.gushi.ci/%s.json', $poetryApi[mt_rand(0, count($poetryApi) - 1)]));
                         $poetry = json_decode($poetry, true);
@@ -129,12 +293,22 @@ class Pusher
             }
 
             usleep(500000); // 防止执行过快，内存占用过高
-        }
+        }*/
 
         return true;
     }
 
+    public static function robotInstance($config)
+    {
+        if (static::$robot === null) {
+            static::$robot = new Robot($config);
+        }
+
+        return static::$robot;
+    }
+
     /**
+     * 恋爱日期获取
      * @param string $date
      * @param string $timeType h:hour|d:day
      * @return float|string

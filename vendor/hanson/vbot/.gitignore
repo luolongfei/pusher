@@ -1,0 +1,5 @@
+/vendor/
+.idea
+/tmp/
+composer.lock
+sandbox

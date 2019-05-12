@@ -18,7 +18,7 @@ define('ROOT_PATH', realpath(APP_PATH . '..') . DS);
 date_default_timezone_set('Asia/Shanghai');
 
 // Server酱微信推送url
-define('SC_URL', 'https://pushbear.ftqq.com/sub');
+//define('SC_URL', 'https://pushbear.ftqq.com/sub');
 
 /**
  * 注册错误处理
@@ -34,6 +34,7 @@ require VENDOR_PATH . 'autoload.php';
 
 use Luolongfei\Lib\Log;
 use Luolongfei\App\Pusher;
+use Luolongfei\Lib\Mail;
 
 /**
  * @throws Exception
@@ -42,6 +43,7 @@ function customize_error_handler()
 {
     if (!is_null($error = error_get_last())) {
         Log::error('程序意外终止', $error);
+        Mail::instance()->send('主人，程序意外终止', '具体情况我也不知道，请查看服务器日志定位问题。');
     }
 }
 
@@ -52,6 +54,10 @@ function customize_error_handler()
 function exception_handler(Exception $e)
 {
     Log::error('未捕获的异常: ' . $e->getMessage());
+    Mail::instance()->send('主人，未捕获的异常', "具体的异常内容是：\n" . $e->getMessage());
 }
 
+/**
+ * php run.php --session=vbot
+ */
 Pusher::instance()->handle();
