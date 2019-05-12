@@ -96,7 +96,7 @@ class Pusher
         $messageHandler->setCustomHandler(function () {
             Log::info('触发执行，心跳检出');
             $friends = vbot('friends');
-            $friend = $friends->getUsernameByRemarkName('机器人', false);
+            $friend = $friends->getUsernameByRemarkName('肖阿姨', false);
 
             foreach (config('classes.' . date('w')) as $timeRange => $class) { // 只遍历当天的课程
                 $date = date('Y-m-d');
