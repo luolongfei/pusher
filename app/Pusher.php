@@ -192,7 +192,7 @@ class Pusher
          * 免扫码成功监听器
          */
         $observer->setReLoginSuccessObserver(function () {
-            Log::notice('免扫码登录成功');
+            Log::info('免扫码登录成功');
             Mail::instance()->send('主人，免扫码登录成功，服务已恢复', '免扫码登录成功，说明服务已经恢复，不用再扫码登录了。');
         });
 
@@ -208,7 +208,7 @@ class Pusher
          * 程序退出监听器
          */
         $observer->setExitObserver(function () {
-            Log::warning('微信机器人被挂起，已退出');
+            Log::info('微信机器人被挂起，已退出');
             Mail::instance()->send('主人，微信机器人被挂起，已退出', '微信机器人被挂起，已退出，可能需要重新扫码登录。请登录服务器确认具体情况。');
         });
 
@@ -217,7 +217,7 @@ class Pusher
          * 当接收消息异常时，当系统判断为太久没从手机端打开微信时，则急需打开，时间过久将断开。
          */
         $observer->setNeedActivateObserver(function () {
-            Log::warning('太久没从手机端打开微信，急需打开，时间过久将断开');
+            Log::info('太久没从手机端打开微信，急需打开，时间过久将断开');
             Mail::instance()->send('主人，太久没从手机端打开微信，急需打开，时间过久将断开', '太久没从手机端打开微信，急需打开，时间过久将断开。快打开手机上的微信。');
         });
 
