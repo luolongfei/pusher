@@ -140,7 +140,7 @@ class Pusher
                     list($minute, $second) = explode('.', bcdiv($startTime - time(), 60, 2));
                     $second = bcmul('0.' . $second, 60);
 
-                    $content = sprintf(
+                    $content = $class === '午睡' ? '该睡告告了，梦里见。' : sprintf(
                         '该上「%s」课啦，距上课还有%s分%s秒。',
                         $class,
                         $minute < 0 ? 0 : $minute,
