@@ -128,10 +128,11 @@ class Pusher
                         }
 
                         $poetrySummary = sprintf(
-                            "啊，想起%s曾经写过一首诗叫《%s》, 是关于爱情的。\n\n%s\n\n念完了，我肖阿姨开始上课吧哈哈哈，愿此刻有个好心情~",
+                            "啊，想起%s曾经写过一首诗叫《%s》, 是关于爱情的。\n\n%s\n\n念完了，我肖阿姨开始%s吧哈哈哈，愿此刻有个好心情~",
                             $poetry['author'],
                             $poetry['origin'],
-                            $poetryContent
+                            $poetryContent,
+                            $class === '午睡' ? '睡告告' : '上课'
                         );
                     } catch (\Exception $e) {
                         Log::error('获取随机诗词出错：' . $e->getMessage());
