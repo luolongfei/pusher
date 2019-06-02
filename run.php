@@ -1,5 +1,6 @@
 <?php
 /**
+ * Pusher
  * @author mybsdc <mybsdc@gmail.com>
  * @date 2019/3/2
  * @time 11:05
@@ -16,9 +17,6 @@ define('APP_PATH', realpath('app') . DS);
 define('ROOT_PATH', realpath(APP_PATH . '..') . DS);
 
 date_default_timezone_set('Asia/Shanghai');
-
-// Server酱微信推送url
-//define('SC_URL', 'https://pushbear.ftqq.com/sub');
 
 /**
  * 注册错误处理
