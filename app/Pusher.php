@@ -117,6 +117,14 @@ class Pusher
                         // 随机诗词
                         $poetryApi = [
                             'shuqing/aiqing',
+                            'shuqing/sinian',
+                            'renwu/nvzi',
+                            'rensheng/lizhi',
+                            'rensheng/qingchun',
+                            'siji/xiatian',
+                            'rensheng/zheli',
+                            'rensheng/shiguang',
+                            'rensheng/mengxiang',
                         ];
                         $poetry = Curl::get(sprintf('https://api.gushi.ci/%s.json', $poetryApi[mt_rand(0, count($poetryApi) - 1)]));
                         $poetry = json_decode($poetry, true);
@@ -128,9 +136,11 @@ class Pusher
                         }
 
                         $poetrySummary = sprintf(
-                            "啊，想起%s曾经写过一首诗叫《%s》, 是关于爱情的。\n\n%s\n\n念完了，我肖阿姨开始%s吧哈哈哈，愿此刻有个好心情~",
-                            $poetry['author'],
+                            "[惊恐][惊恐]呀，想起%s写的《%s》, 是关于「%s」的。\n\n%s\n\n[害羞][害羞]念完了，我肖阿姨开始%s吧哈哈哈，
+                            [愉快][愉快]此刻师父向你推了个好心情~",
+                            $poetry['author'] === '佚名' ? '不晓得谁' : $poetry['author'],
                             $poetry['origin'],
+                            substr($poetry['category'], strripos($poetry['category'], '-') + 1),
                             $poetryContent,
                             $class === '午睡' ? '睡' : '上课'
                         );
@@ -148,7 +158,7 @@ class Pusher
                         $second < 10 ? '0' . $second : $second
                     );
                     $content .= sprintf(
-                        "\n\n今天是师父和我屋肖阿姨相识的第%s天，正式相爱的第%s天，第%s个小时。\n\n%s",
+                        "\n\n今天是师父和我屋肖阿姨相识的第%s天，正式相爱的第%s天，第%s个小时[爱心]。\n\n%s",
                         self::LOVE(self::MEET_DATE),
                         self::LOVE(),
                         self::LOVE(self::LOVE_DATE_START, 'h'),
