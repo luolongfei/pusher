@@ -120,7 +120,6 @@ class Pusher
                             'shuqing/sinian',
                             'renwu/nvzi',
                             'rensheng/lizhi',
-                            'rensheng/qingchun',
                         ];
                         $poetry = Curl::get(sprintf('https://api.gushi.ci/%s.json', $poetryApi[mt_rand(0, count($poetryApi) - 1)]));
                         $poetry = json_decode($poetry, true);
