@@ -121,10 +121,6 @@ class Pusher
                             'renwu/nvzi',
                             'rensheng/lizhi',
                             'rensheng/qingchun',
-                            'siji/xiatian',
-                            'rensheng/zheli',
-                            'rensheng/shiguang',
-                            'rensheng/mengxiang',
                         ];
                         $poetry = Curl::get(sprintf('https://api.gushi.ci/%s.json', $poetryApi[mt_rand(0, count($poetryApi) - 1)]));
                         $poetry = json_decode($poetry, true);
@@ -136,8 +132,7 @@ class Pusher
                         }
 
                         $poetrySummary = sprintf(
-                            "[惊恐][惊恐]呀，想起%s写的《%s》, 是关于「%s」的。\n\n%s\n\n[害羞][害羞]念完了，我肖阿姨开始%s吧哈哈哈，
-                            [愉快][愉快]此刻师父向你推了个好心情~",
+                            "[惊恐][惊恐]呀，想起%s写的《%s》, 是关于「%s」的。\n\n%s\n\n[害羞][害羞]念完了，我肖阿姨开始%s吧哈哈哈，[愉快][愉快]此刻师父向你推了个好心情~",
                             $poetry['author'] === '佚名' ? '不晓得谁' : $poetry['author'],
                             $poetry['origin'],
                             substr($poetry['category'], strripos($poetry['category'], '-') + 1),
