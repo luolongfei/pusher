@@ -113,33 +113,46 @@ class Pusher
                 $now = time();
 
                 if ($now <= $startTime && ($startTime - $now) <= config('inAdvance') && $class) { // 提前几分钟推送
-                    try {
-                        // 随机诗词
-                        $poetryApi = [
-                            'shuqing/aiqing',
-                            'shuqing/sinian',
-                            'renwu/nvzi',
-                            'rensheng/lizhi',
-                        ];
-                        $poetry = Curl::get(sprintf('https://api.gushi.ci/%s.json', $poetryApi[mt_rand(0, count($poetryApi) - 1)]));
-                        $poetry = json_decode($poetry, true);
+                    $num = 0;
+                    while (true) {
+                        try {
+                            // 随机诗词
+                            $poetryApi = [
+                                'shuqing/aiqing',
+                                'shuqing/sinian',
+                                'renwu/nvzi',
+                                'rensheng/lizhi',
+                            ];
+                            $poetry = Curl::get(sprintf('https://api.gushi.ci/%s.json', $poetryApi[mt_rand(0, count($poetryApi) - 1)]));
+                            $poetry = json_decode($poetry, true);
 
-                        $poetrySummary = '';
-                        $poetryContent = isset($poetry['content']) ? $poetry['content'] : '';
-                        if (!$poetryContent) {
-                            throw new \Exception('诗词接口返回的数据异常');
+                            $poetrySummary = '';
+                            $poetryContent = isset($poetry['content']) ? $poetry['content'] : '';
+                            if (!$poetryContent) {
+                                throw new \Exception('诗词接口返回的数据异常');
+                            }
+
+                            $poetrySummary = sprintf(
+                                "[惊恐][惊恐]呀，想起%s写的《%s》, 是关于「%s」的。\n\n%s\n\n[害羞][害羞]念完了，我肖阿姨开始%s吧哈哈哈，[愉快][愉快]此刻师父向你推了个好心情~",
+                                $poetry['author'] === '佚名' ? '不晓得谁' : $poetry['author'],
+                                $poetry['origin'],
+                                substr($poetry['category'], strripos($poetry['category'], '-') + 1),
+                                $poetryContent,
+                                $class === '午睡' ? '睡' : '上课'
+                            );
+
+                            if (self::poetryCheck($poetrySummary)) {
+                                break;
+                            }
+
+                            $num ++;
+                            Log::info(sprintf('检出低质量诗词，拼接内容为：%s  处理：已丢弃并重新获取。重试次数：%d', $poetrySummary, $num));
+
+                            sleep(1);
+                        } catch (\Exception $e) {
+                            Log::error('获取随机诗词出错：' . $e->getMessage());
+                            break;
                         }
-
-                        $poetrySummary = sprintf(
-                            "[惊恐][惊恐]呀，想起%s写的《%s》, 是关于「%s」的。\n\n%s\n\n[害羞][害羞]念完了，我肖阿姨开始%s吧哈哈哈，[愉快][愉快]此刻师父向你推了个好心情~",
-                            $poetry['author'] === '佚名' ? '不晓得谁' : $poetry['author'],
-                            $poetry['origin'],
-                            substr($poetry['category'], strripos($poetry['category'], '-') + 1),
-                            $poetryContent,
-                            $class === '午睡' ? '睡' : '上课'
-                        );
-                    } catch (\Exception $e) {
-                        Log::error('获取随机诗词出错：' . $e->getMessage());
                     }
 
                     list($minute, $second) = explode('.', bcdiv($startTime - time(), 60, 2));
@@ -301,6 +314,35 @@ class Pusher
         }*/
 
         return true;
+    }
+
+    /**
+     * 检查过滤低质量诗词
+     * 当诗词内容存在rules里指定的关键字时，表示检查不通过，返回false，否则返回true。支持正则
+     * @param string $poetry
+     * @param array $rules
+     * @return bool
+     */
+    public static function poetryCheck($poetry = '', $rules = [])
+    {
+        $rules = $rules ?: config('lowQualityKeywords');
+        if (empty($rules)) {
+            return true;
+        }
+
+        $regex = '';
+        foreach ($rules as $rule) {
+            if (strlen($rule) === 0) {
+                continue;
+            }
+            $regex .= '|' . $rule;
+        }
+        if ($regex === '') {
+            return true;
+        }
+        $regex = sprintf('/(?:%s)/i', ltrim($regex, '|'));
+
+        return preg_match($regex, $poetry) === 0;
     }
 
     public static function robotInstance($config)
