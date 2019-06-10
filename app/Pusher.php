@@ -132,7 +132,7 @@ class Pusher
                             }
 
                             $poetrySummary = sprintf(
-                                "%s\n\n[亲亲][亲亲]师父现在满脑壳都是你~",
+                                "%s",
                                 $poetryContent
                             );
 
@@ -140,7 +140,7 @@ class Pusher
                                 break;
                             }
 
-                            $num ++;
+                            $num++;
                             Log::info(sprintf('检出低质量诗词，拼接内容为：%s  处理：已丢弃并重新获取。重试次数：%d', $poetrySummary, $num));
 
                             sleep(1);
@@ -160,9 +160,10 @@ class Pusher
                         $second < 10 ? '0' . $second : $second
                     );
                     $content .= sprintf(
-                        "\n\n今天是师父和我屋肖阿姨相识的第%s天，正式相爱的第%s天，第%s个小时[爱心]。\n\n%s",
-                        self::LOVE(self::MEET_DATE),
-                        self::LOVE(),
+                        "\n\n今天是我们相识的第%s，正式相爱的第%s，第%s，想你的第%s~[爱心]。\n\n%s",
+                        self::LOVE(self::MEET_DATE, 'm'),
+                        self::LOVE(self::LOVE_DATE_START, 'm'),
+                        self::LOVE(self::LOVE_DATE_START, 'd'),
                         self::LOVE(self::LOVE_DATE_START, 'h'),
                         $poetrySummary
                     );
@@ -311,6 +312,15 @@ class Pusher
         return true;
     }
 
+    public static function robotInstance($config)
+    {
+        if (static::$robot === null) {
+            static::$robot = new Robot($config);
+        }
+
+        return static::$robot;
+    }
+
     /**
      * 检查过滤低质量诗词
      * 当诗词内容存在rules里指定的关键字时，表示检查不通过，返回false，否则返回true。支持正则
@@ -340,36 +350,31 @@ class Pusher
         return preg_match($regex, $poetry) === 0;
     }
 
-    public static function robotInstance($config)
-    {
-        if (static::$robot === null) {
-            static::$robot = new Robot($config);
-        }
-
-        return static::$robot;
-    }
-
     /**
      * 恋爱日期获取
      * @param string $date
-     * @param string $timeType h:hour|d:day
-     * @return float|string
+     * @param string $timeType m:month|h:hour|d:day
+     * @return string
      */
     public static function LOVE($date = '', $timeType = 'd')
     {
         $date = $date ?: self::LOVE_DATE_START;
         $start = strtotime($date);
 
-        $loveDayNum = '无穷大';
+        $time = '无穷大';
         switch ($timeType) {
-            case 'h':
-                $loveDayNum = ceil((time() - $start) / 3600);
+            case 'm':
+                $monthNum = (date('Y') - date('Y', $start)) * 12 + (date('n') - date('n', $start));
+                $time = sprintf('%d个月', $monthNum);
                 break;
             case 'd':
-                $loveDayNum = ceil((time() - $start) / (24 * 3600));
+                $time = sprintf('%d天', ceil((time() - $start) / (24 * 3600)));
+                break;
+            case 'h':
+                $time = sprintf('%d个小时', ceil((time() - $start) / 3600));
                 break;
         }
 
-        return $loveDayNum;
+        return $time;
     }
 }
