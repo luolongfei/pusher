@@ -132,7 +132,7 @@ class Pusher
                             }
 
                             $poetrySummary = sprintf(
-                                "\n\n%s\n\n[亲亲][亲亲]师父现在满脑壳都是你~",
+                                "%s\n\n[亲亲][亲亲]师父现在满脑壳都是你~",
                                 $poetryContent
                             );
 
