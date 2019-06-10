@@ -132,12 +132,8 @@ class Pusher
                             }
 
                             $poetrySummary = sprintf(
-                                "啊，想起%s写的《%s》, 是写%s的。\n\n%s\n\n[亲亲][亲亲]我肖阿姨开始%s吧啦啦啦啦，[害羞]师父现在满脑壳都是你~",
-                                $poetry['author'] === '佚名' ? '不晓得谁' : $poetry['author'],
-                                $poetry['origin'],
-                                substr($poetry['category'], strripos($poetry['category'], '-') + 1),
-                                $poetryContent,
-                                $class === '午睡' ? '睡' : '上课'
+                                "\n\n%s\n\n[亲亲][亲亲]师父现在满脑壳都是你~",
+                                $poetryContent
                             );
 
                             if (self::poetryCheck($poetrySummary)) {
