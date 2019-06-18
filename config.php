@@ -89,7 +89,7 @@ return [
      */
     'inAdvance' => 180, // 提前3分钟推送课程提醒
     'debug' => false,
-    'stdout' => false, // 输出Log到控制台
+    'stdout' => false, // 输出日志到控制台
 
     /**
      * 邮箱配置
@@ -112,6 +112,7 @@ return [
         '死',
         '坟',
         '冢',
+        '黄土',
     ],
 
     /**

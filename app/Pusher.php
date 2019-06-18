@@ -160,7 +160,7 @@ class Pusher
                         $second < 10 ? '0' . $second : $second
                     );
                     $content .= sprintf(
-                        "\n\n今天是我们相识的第%s（第%s），正式相爱的第%s（第%s），想你的第%s[爱心]~\n\n%s",
+                        "\n\n今天是我们相识的第%s（第%s），正式相爱的第%s（第%s），想你的第%s~[爱心]\n\n%s",
                         self::LOVE(self::MEET_DATE, 'd'),
                         self::LOVE(self::MEET_DATE, 'm'),
                         self::LOVE(self::LOVE_DATE_START, 'd'),
