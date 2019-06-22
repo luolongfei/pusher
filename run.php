@@ -1,6 +1,7 @@
 <?php
 /**
  * Pusher
+ *
  * @author mybsdc <mybsdc@gmail.com>
  * @date 2019/3/2
  * @time 11:05
@@ -47,6 +48,7 @@ function customize_error_handler()
 
 /**
  * @param $e
+ *
  * @throws Exception
  */
 function exception_handler(Exception $e)

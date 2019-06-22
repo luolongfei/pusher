@@ -1,6 +1,7 @@
 <?php
 /**
  * Server酱微信推送
+ *
  * @author mybsdc <mybsdc@gmail.com>
  * @date 2018/7/25
  * @time 13:40
@@ -14,9 +15,11 @@ class ServerChan
 {
     /**
      * 微信推送
+     *
      * @param string $title
      * @param string $content
      * @param string $sendKey 不同的$sendKey对应不同的人，不同的人对应不同的通道
+     *
      * @return mixed
      * @throws \Exception
      */

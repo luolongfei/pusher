@@ -1,6 +1,7 @@
 <?php
 /**
- * 推课
+ * 推送
+ *
  * @author mybsdc <mybsdc@gmail.com>
  * @date 2019/3/3
  * @time 17:46
@@ -324,9 +325,12 @@ class Pusher
 
     /**
      * 检查过滤低质量诗词
+     *
      * 当诗词内容存在rules里指定的关键字时，表示检查不通过，返回false，否则返回true。支持正则
+     *
      * @param string $poetry
      * @param array $rules
+     *
      * @return bool
      */
     public static function poetryCheck($poetry = '', $rules = [])
@@ -353,8 +357,10 @@ class Pusher
 
     /**
      * 恋爱日期获取
+     *
      * @param string $date
      * @param string $timeType m:month|h:hour|d:day
+     *
      * @return string
      */
     public static function LOVE($date = '', $timeType = 'd')

@@ -1,6 +1,7 @@
 <?php
 /**
  * 环境变量
+ *
  * @author mybsdc <mybsdc@gmail.com>
  * @date 2019/6/2
  * @time 17:28

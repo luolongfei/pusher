@@ -1,6 +1,7 @@
 <?php
 /**
  * 助手函数
+ *
  * @author mybsdc <mybsdc@gmail.com>
  * @date 2019/3/3
  * @time 16:34
@@ -13,7 +14,9 @@ use Luolongfei\Lib\Env;
 if (!function_exists('config')) {
     /**
      * 获取配置
+     *
      * @param string $key 键，支持点式访问
+     *
      * @return array|mixed
      */
     function config($key = '')
@@ -47,8 +50,10 @@ if (!function_exists('config')) {
 if (!function_exists('is_repeated')) {
     /**
      * 检查文件是否重复
+     *
      * @param string $fileName
      * @param string $path
+     *
      * @return bool
      * @throws Exception
      */
@@ -71,9 +76,11 @@ if (!function_exists('is_repeated')) {
 if (!function_exists('create_file')) {
     /**
      * 创建文件
+     *
      * @param string $fileName
      * @param string $content
      * @param string $path
+     *
      * @return bool
      * @throws Exception
      */
@@ -111,8 +118,10 @@ if (!function_exists('create_file')) {
 if (!function_exists('env')) {
     /**
      * 获取环境变量值
+     *
      * @param $key
      * @param null $default
+     *
      * @return array|bool|false|null|string
      */
     function env($key, $default = null)

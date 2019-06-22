@@ -1,6 +1,7 @@
 <?php
 /**
  * 日志
+ *
  * @author mybsdc <mybsdc@gmail.com>
  * @date 2019/3/3
  * @time 12:01
@@ -50,6 +51,7 @@ class Log
     /**
      * @param $message
      * @param array $context
+     *
      * @return bool
      * @throws \Exception
      */
@@ -61,6 +63,7 @@ class Log
     /**
      * @param $message
      * @param array $context
+     *
      * @return bool
      * @throws \Exception
      */
@@ -72,6 +75,7 @@ class Log
     /**
      * @param $message
      * @param array $context
+     *
      * @return bool
      * @throws \Exception
      */
@@ -83,6 +87,7 @@ class Log
     /**
      * @param $message
      * @param array $context
+     *
      * @return bool
      * @throws \Exception
      */
@@ -94,6 +99,7 @@ class Log
     /**
      * @param $message
      * @param array $context
+     *
      * @return bool
      * @throws \Exception
      */
@@ -105,6 +111,7 @@ class Log
     /**
      * @param $message
      * @param array $context
+     *
      * @return bool
      * @throws \Exception
      */
@@ -116,6 +123,7 @@ class Log
     /**
      * @param $message
      * @param array $context
+     *
      * @return bool
      * @throws \Exception
      */

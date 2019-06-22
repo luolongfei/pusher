@@ -1,6 +1,7 @@
 <?php
 /**
  * 邮件
+ *
  * @author mybsdc <mybsdc@gmail.com>
  * @date 2019/5/12
  * @time 16:38
@@ -29,10 +30,12 @@ class Mail
 
     /**
      * 发送邮件
+     *
      * @param string $subject 标题
      * @param string|array $content 正文
      * @param string $to 收件人，选传
      * @param string $template 模板，选传
+     *
      * @throws \Exception
      */
     public function send($subject, $content, $to = '', $template = '')

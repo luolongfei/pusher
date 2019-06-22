@@ -1,6 +1,7 @@
 <?php
 /**
- * curl
+ * Curl
+ *
  * @author mybsdc <mybsdc@gmail.com>
  * @date 2019/3/3
  * @time 12:41
@@ -55,6 +56,7 @@ class Curl
     /**
      * @param $url
      * @param array $params
+     *
      * @return string
      * @throws \Exception
      */
@@ -78,6 +80,7 @@ class Curl
     /**
      * @param $url
      * @param array $params
+     *
      * @return string
      * @throws \Exception
      */
@@ -100,6 +103,7 @@ class Curl
 
     /**
      * @param string $name
+     *
      * @return array|string
      * @throws \Exception
      */
