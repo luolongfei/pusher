@@ -184,7 +184,7 @@ class CatDiscount
 
         // 商品已下架或来自亚马逊或当当
         if (!$standardUrl['status']) {
-            self::$rtErrorMsg = '[皱眉]出错了，它可能是个不存在的商品，可能是商品已下架。';
+            self::$rtErrorMsg = '[皱眉]出错了，可能是商品已下架或者是暂不支持查询的电商。';
 
             // TODO 支持亚马逊以及当当网查询
 
@@ -193,7 +193,7 @@ class CatDiscount
 
         $goodsDetail = self::getGoodsDetail($standardUrl['goodsId'], $standardUrl['shop']);
         if ($goodsDetail === false) {
-            self::$rtErrorMsg = '[皱眉]获取商品详情出错，具体什么情况，咱也不知道，咱也不敢问。小伙子别慌，我已经在排查问题了。';
+            self::$rtErrorMsg = '[皱眉]出错了，这可能是个不存在的商品，可能是商品已下架。';
 
             return false;
         }
