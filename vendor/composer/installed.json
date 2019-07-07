@@ -434,17 +434,17 @@
     },
     {
         "name": "hanson/vbot",
-        "version": "2.0.12",
-        "version_normalized": "2.0.12.0",
+        "version": "2.0.14",
+        "version_normalized": "2.0.14.0",
         "source": {
             "type": "git",
             "url": "https://github.com/Hanson/vbot.git",
-            "reference": "6ad88348b28831c2cb18b92f52f807873da0abc7"
+            "reference": "9365738583deacd1d5840985a634186c94a060c7"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Hanson/vbot/zipball/6ad88348b28831c2cb18b92f52f807873da0abc7",
-            "reference": "6ad88348b28831c2cb18b92f52f807873da0abc7",
+            "url": "https://api.github.com/repos/Hanson/vbot/zipball/9365738583deacd1d5840985a634186c94a060c7",
+            "reference": "9365738583deacd1d5840985a634186c94a060c7",
             "shasum": "",
             "mirrors": [
                 {
@@ -466,7 +466,7 @@
             "nesbot/carbon": "^1.21",
             "symfony/console": "3.*|4.*"
         },
-        "time": "2019-03-23T15:15:23+00:00",
+        "time": "2019-06-28T09:01:04+00:00",
         "bin": [
             "bin/vbot"
         ],

@@ -15,5 +15,5 @@ return array(
     '37a3dc5111fe8f707ab4c132ef1dbc62' => $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
     '320cde22f66dd4f5d3fd621d3e88b98f' => $vendorDir . '/symfony/polyfill-ctype/bootstrap.php',
     'c355e0897882ebe62200c783fabb8783' => $vendorDir . '/hanson/vbot/src/Support/helpers.php',
-    '7a5538689d491cad40b71a8fb7a6626a' => $baseDir . '/app/helpers.php',
+    '16c7d2b9a3c69348071f197e41d652fc' => $baseDir . '/app/helpers.php',
 );

@@ -28,9 +28,9 @@ class Log
      * @return Logger
      * @throws \Exception
      */
-    public static function getLogger()
+    public static function logger()
     {
-        if (static::$instance === null) {
+        if (!self::$instance instanceof Logger) {
             $handler = new StreamHandler(
                 config('stdout') ? 'php://stdout' : ROOT_PATH . 'logs/' . date('Y-m-d') . '/push.log',
                 config('debug') ? Logger::DEBUG : Logger::INFO
@@ -45,7 +45,7 @@ class Log
             self::$instance = $logger;
         }
 
-        return static::$instance;
+        return self::$instance;
     }
 
     /**
@@ -57,7 +57,7 @@ class Log
      */
     public static function debug($message, array $context = [])
     {
-        return self::getLogger()->addDebug($message, $context);
+        return self::logger()->addDebug($message, $context);
     }
 
     /**
@@ -69,7 +69,7 @@ class Log
      */
     public static function info($message, array $context = [])
     {
-        return self::getLogger()->addInfo($message, $context);
+        return self::logger()->addInfo($message, $context);
     }
 
     /**
@@ -81,7 +81,7 @@ class Log
      */
     public static function notice($message, array $context = [])
     {
-        return self::getLogger()->addNotice($message, $context);
+        return self::logger()->addNotice($message, $context);
     }
 
     /**
@@ -93,7 +93,7 @@ class Log
      */
     public static function warning($message, array $context = [])
     {
-        return self::getLogger()->addWarning($message, $context);
+        return self::logger()->addWarning($message, $context);
     }
 
     /**
@@ -105,7 +105,7 @@ class Log
      */
     public static function error($message, array $context = [])
     {
-        return self::getLogger()->addError($message, $context);
+        return self::logger()->addError($message, $context);
     }
 
     /**
@@ -117,7 +117,7 @@ class Log
      */
     public static function alert($message, array $context = [])
     {
-        return self::getLogger()->addAlert($message, $context);
+        return self::logger()->addAlert($message, $context);
     }
 
     /**
@@ -129,6 +129,6 @@ class Log
      */
     public static function emergency($message, array $context = [])
     {
-        return self::getLogger()->addEmergency($message, $context);
+        return self::logger()->addEmergency($message, $context);
     }
 }

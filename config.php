@@ -86,6 +86,13 @@ return [
     ],
 
     /**
+     * LOVE
+     */
+    'meetDate' => env('MEET_DATE'),
+    'loveDateStart' => env('LOVE_DATE_START'),
+    'girlfriendRemarkName' => env('GIRLFRIEND_REMARK_NAME'),
+
+    /**
      * 其它配置
      */
     'inAdvance' => 180, // 提前3分钟推送课程提醒
@@ -115,6 +122,16 @@ return [
         '冢',
         '黄土',
         '棺',
+    ],
+
+    /**
+     * 匹配商城URL的正则
+     */
+    'shopUrlRegex' => [
+        '京东' => 'https?:\/\/.*?jd\.(?:com|hk).*?(?:\.html|(?:(?=[\?\s])|$))',
+        '天猫|淘宝' => 'https?:\/\/(?:.*?tb\.cn.*?(?:(?=[\?\s])|$|(?=[^\x00-\xff]))|.*?(?:tmall\.com|taobao\.com).*?id=.*?(?:(?=[&\s])|$|(?=[^\x00-\xff])))',
+        /*'当当' => 'https?:\/\/.*?dangdang\.com.*?(?:\.html|pid=.*?)(?:(?=[&\s<\?])|$|(?=[^\x00-\xff]))',
+        '亚马逊' => 'https?:\/\/.*?amazon\.cn.*?(?:(?=[\?\s<;&])|$)',*/
     ],
 
     /**

@@ -12,6 +12,7 @@ namespace Luolongfei\App;
 use Luolongfei\Lib\Log;
 use Luolongfei\Lib\Curl;
 use Luolongfei\Lib\Mail;
+use Luolongfei\Lib\CatDiscount;
 
 use Hanson\Vbot\Foundation\Vbot as Robot;
 use Vbot\Blacklist\Blacklist;
@@ -29,12 +30,12 @@ class Pusher
     /**
      * MEET_DATE
      */
-    const MEET_DATE = '2018-12-29';
+    protected static $MEET_DATE;
 
     /**
      * LOVE_DATE_START
      */
-    const LOVE_DATE_START = '2019-03-31';
+    protected static $LOVE_DATE_START;
 
     /**
      * @var Pusher
@@ -53,6 +54,9 @@ class Pusher
 
     public function __construct($session = null)
     {
+        self::$MEET_DATE = config('meetDate');
+        self::$LOVE_DATE_START = config('loveDateStart');
+
         $this->config = config('weChat');
 
         if ($session) {
@@ -65,11 +69,11 @@ class Pusher
      */
     public static function instance()
     {
-        if (static::$instance === null) {
-            static::$instance = new static();
+        if (!self::$instance instanceof Pusher) {
+            self::$instance = new self();
         }
 
-        return static::$instance;
+        return self::$instance;
     }
 
     public static function getWeek()
@@ -95,9 +99,9 @@ class Pusher
 
         // 一直触发
         $messageHandler->setCustomHandler(function () {
-            Log::info('触发执行，心跳检出');
+//            Log::info('触发执行，心跳检出');
             $friends = vbot('friends');
-            $friend = $friends->getUsernameByRemarkName('肖阿姨', false);
+            $friend = $friends->getUsernameByRemarkName(config('girlfriendRemarkName'), false);
 
             foreach (config('classes.' . date('w')) as $timeRange => $class) { // 只遍历当天的课程
                 $date = date('Y-m-d');
@@ -162,11 +166,11 @@ class Pusher
                     );
                     $content .= sprintf(
                         "\n\n今天是我们相识的第%s（第%s），正式相爱的第%s（第%s），想你的第%s~[爱心]\n\n%s",
-                        self::LOVE(self::MEET_DATE, 'd'),
-                        self::LOVE(self::MEET_DATE, 'm'),
-                        self::LOVE(self::LOVE_DATE_START, 'd'),
-                        self::LOVE(self::LOVE_DATE_START, 'm'),
-                        self::LOVE(self::LOVE_DATE_START, 'h'),
+                        self::LOVE(self::$MEET_DATE, 'd'),
+                        self::LOVE(self::$MEET_DATE, 'm'),
+                        self::LOVE(self::$LOVE_DATE_START, 'd'),
+                        self::LOVE(self::$LOVE_DATE_START, 'm'),
+                        self::LOVE(self::$LOVE_DATE_START, 'h'),
                         $poetrySummary
                     );
 
@@ -174,7 +178,7 @@ class Pusher
 
                     if ($rt === false) {
                         Log::error('消息发送失败');
-                        Mail::instance()->send('主人，消息推送失败', "消息内容：\n" . (string)$content);
+                        Mail::send('主人，消息推送失败', "消息内容：\n" . (string)$content);
                     }
 
                     create_file($fileName, $rt);
@@ -186,22 +190,24 @@ class Pusher
 
         // 收到消息时触发
         $messageHandler->setHandler(function (Collection $message) {
-            /*try {
-                if ($message['type'] === 'recall') {
-                    Text::send('filehelper', $message['content'] . ' : ' . $message['origin']['content']);
-                    if ($message['origin']['type'] === 'image') {
-                        Image::send('filehelper', $message['origin']);
-                    } else if ($message['origin']['type'] === 'emoticon') {
-                        Emoticon::send('filehelper', $message['origin']);
-                    } else if ($message['origin']['type'] === 'video') {
-                        Video::send('filehelper', $message['origin']);
-                    } else if ($message['origin']['type'] === 'voice') {
-                        Voice::send('filehelper', $message['origin']);
+            try {
+                // 仅处理好友来信
+                if ($message['fromType'] === 'Friend') {
+                    // 检查是否商品地址
+                    $url = CatDiscount::shopUrlCheck($message['message']);
+                    if ($url) {
+                        // 获取价格文言
+                        $priceText = CatDiscount::getPriceText($url);
+
+                        // 原路返回
+                        Text::send($message['from']['UserName'], $priceText);
                     }
+                } else if ($message['fromType'] === 'Self') {
+                    // TODO 处理自己的命令
                 }
             } catch (\Exception $e) {
-                Log::error('收到消息时触发错误: ', $e->getMessage());
-            }*/
+                Log::error('收到消息处理时发生错误: ', $e->getMessage());
+            }
         });
 
         /**
@@ -209,7 +215,7 @@ class Pusher
          */
         $observer->setReLoginSuccessObserver(function () {
             Log::info('免扫码登录成功');
-            Mail::instance()->send('主人，免扫码登录成功，服务已恢复', '免扫码登录成功，说明服务已经恢复，不用再扫码登录了。');
+            Mail::send('主人，免扫码登录成功，服务已恢复', '免扫码登录成功，说明服务已经恢复，不用再扫码登录了。');
         });
 
         /**
@@ -225,7 +231,7 @@ class Pusher
          */
         $observer->setExitObserver(function () {
             Log::info('微信机器人被挂起，已退出');
-            Mail::instance()->send('主人，微信机器人被挂起，已退出', '微信机器人被挂起，已退出，可能需要重新扫码登录。请登录服务器确认具体情况。');
+            Mail::send('主人，微信机器人被挂起，已退出', '微信机器人被挂起，已退出，可能需要重新扫码登录。请登录服务器确认具体情况。');
         });
 
         /**
@@ -234,7 +240,7 @@ class Pusher
          */
         $observer->setNeedActivateObserver(function () {
             Log::info('太久没从手机端打开微信，急需打开，时间过久将断开');
-            Mail::instance()->send('主人，太久没从手机端打开微信，急需打开，时间过久将断开', '太久没从手机端打开微信，急需打开，时间过久将断开。快打开手机上的微信。');
+            Mail::send('主人，太久没从手机端打开微信，急需打开，时间过久将断开', '太久没从手机端打开微信，急需打开，时间过久将断开。快打开手机上的微信。');
         });
 
         $weChat->server->serve();
@@ -276,7 +282,7 @@ class Pusher
                         }
 
                         $poetrySummary = sprintf(
-                            "诗词取自%s写的《%s》, 分类于「%s」之下。\n\n%s\n\n报告完毕。我肖阿姨开始上课吧啦啦啦~",
+                            "诗词取自%s写的《%s》, 分类于「%s」之下。\n\n%s\n\n报告完毕。阿姨开始上课吧啦啦啦~",
                             $poetry['author'],
                             $poetry['origin'],
                             $poetry['category'],
@@ -290,16 +296,16 @@ class Pusher
                     $second = bcmul('0.' . $second, 60);
 
                     $title = sprintf(
-                        '肖阿姨，该上「%s」课啦，距上课还有%s分%s秒。',
+                        '阿姨，该上「%s」课啦，距上课还有%s分%s秒。',
                         $class,
                         $minute < 0 ? 0 : $minute,
                         $second < 10 ? '0' . $second : $second
                     );
                     $content = sprintf(
-                        "今天是师父和我屋肖阿姨相识的第%s天，正式相爱的第%s天，第%s个小时。你屋师父正在\n想你~\n%s\nby 爱肖阿姨的师父",
-                        self::LOVE(self::MEET_DATE),
+                        "今天是相识的第%s天，正式相爱的第%s天，第%s个小时。师父正在\n想你~\n%s\nby 师父",
+                        self::LOVE(self::$MEET_DATE),
                         self::LOVE(),
-                        self::LOVE(self::LOVE_DATE_START, 'h'),
+                        self::LOVE(self::$LOVE_DATE_START, 'h'),
                         $poetrySummary
                     );
 
@@ -365,7 +371,7 @@ class Pusher
      */
     public static function LOVE($date = '', $timeType = 'd')
     {
-        $date = $date ?: self::LOVE_DATE_START;
+        $date = $date ?: self::$LOVE_DATE_START;
         $start = strtotime($date);
 
         $time = '无穷大';

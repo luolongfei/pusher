@@ -10,17 +10,93 @@
 namespace Luolongfei\Lib;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
 use Luolongfei\Lib\Log;
 
 class Curl
 {
+    /**
+     * @var Curl
+     */
     protected static $instance;
+
+    /**
+     * @var float 超时
+     */
+    public static $timeout = 30.0;
+
+    /**
+     * @var CookieJar
+     */
     protected static $jar;
 
-    public static function getJar()
+    /**
+     * GET请求
+     *
+     * @param $url
+     * @param array $params query参数
+     * @param array $opt 指定参数
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public static function get($url, $params = [], $opt = [])
     {
-        if (!self::$jar) {
-            self::$jar = new \GuzzleHttp\Cookie\CookieJar;
+        $payload = [
+            'cookies' => self::jar(),
+        ];
+        if ($params) {
+            $payload['query'] = $params;
+        }
+        if ($opt) {
+            $payload = array_merge($payload, $opt);
+        }
+
+        $request = self::client()->get($url, $payload);
+        $body = (string)$request->getBody();
+
+        Log::debug(sprintf('GET请求：%s，返回：%s', $url, $body), $payload);
+
+        return $body;
+    }
+
+    /**
+     * POST请求
+     *
+     * @param $url
+     * @param array $params 表单字段
+     * @param array $opt 指定参数
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public static function post($url, $params = [], $opt = [])
+    {
+        $payload = [
+            'cookies' => self::jar(),
+        ];
+        if ($params) {
+            $payload['form_params'] = $params;
+        }
+        if ($opt) {
+            $payload = array_merge($payload, $opt);
+        }
+
+        $request = self::client()->post($url, $payload);
+        $body = (string)$request->getBody();
+
+        Log::debug(sprintf('POST请求：%s，返回：%s', $url, $body), $payload);
+
+        return $body;
+    }
+
+    /**
+     * @return CookieJar
+     */
+    public static function jar()
+    {
+        if (!self::$jar instanceof CookieJar) {
+            self::$jar = new CookieJar();
         }
 
         return self::$jar;
@@ -29,76 +105,28 @@ class Curl
     /**
      * @return Client
      */
-    public static function getClient()
+    public static function client()
     {
-        if (self::$instance === null) {
+        if (!self::$instance instanceof Client) {
             $options = [
-                'headers' => [
+                'headers' => [ // 默认header，此处header中同名项可被覆盖
                     'Accept' => '*/*',
-                    'Accept-Encoding' => 'gzip',
-                    'Accept-Language' => 'zh-CN,zh;q=0.9,ja;q=0.8,en;q=0.7',
+                    'Accept-Encoding' => 'gzip;q=1.0, compress;q=0.5',
+                    'Accept-Language' => 'zh-Hans-CN;q=1.0, zh-Hant-CN;q=0.9, ja-CN;q=0.8',
                     'Connection' => 'keep-alive',
-                    'Content-Type' => 'application/x-www-form-urlencoded',
-                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36',
+                    'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8',
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36',
                     'Referer' => 'https://www.google.com',
                 ],
-                'timeout' => 20.0,
-                'http_errors' => false,
+                'timeout' => self::$timeout,
+                'http_errors' => false, // http_errors请求参数设置成true，在400级别的错误的时候将会抛出异常
                 'cookies' => true,
             ];
 
-            self::$instance = new \GuzzleHttp\Client($options);
+            self::$instance = new Client($options);
         }
 
         return self::$instance;
-    }
-
-    /**
-     * @param $url
-     * @param array $params
-     *
-     * @return string
-     * @throws \Exception
-     */
-    public static function get($url, $params = [])
-    {
-        $payload = [
-            'cookies' => self::getJar(),
-        ];
-        if ($params) {
-            $payload['query'] = $params;
-        }
-
-        Log::info('GET请求: ' . $url, $params);
-        $request = self::getClient()->get($url, $payload);
-        $body = (string)$request->getBody();
-        Log::notice('返回结果为: ' . $body);
-
-        return $body;
-    }
-
-    /**
-     * @param $url
-     * @param array $params
-     *
-     * @return string
-     * @throws \Exception
-     */
-    public static function post($url, $params = [])
-    {
-        $payload = [
-            'cookies' => self::getJar(),
-        ];
-        if ($params) {
-            $payload['form_params'] = $params;
-        }
-
-        Log::info('POST请求: ' . $url, $params);
-        $request = self::getClient()->post($url, $payload);
-        $body = (string)$request->getBody();
-        Log::notice('返回结果为: ' . $body);
-
-        return $body;
     }
 
     /**
@@ -109,12 +137,13 @@ class Curl
      */
     public static function cookie($name = '')
     {
-        $cookies = self::getJar()->toArray();
+        $cookies = self::jar()->toArray();
 
         if (strlen($name)) {
             foreach ($cookies as $cookie) {
                 if ($cookie['Name'] == $name) {
-                    Log::info('获取 cookie[' . $name . ']: ' . $cookie['Value']);
+                    Log::debug(sprintf('获取cookie[%s]：%s', $name, $cookie['Value']));
+
                     return $cookie['Value'];
                 }
             }

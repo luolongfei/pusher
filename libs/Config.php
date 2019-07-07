@@ -27,11 +27,11 @@ class Config
 
     public static function instance()
     {
-        if (static::$instance === null) {
-            static::$instance = new static();
+        if (!self::$instance instanceof Config) {
+            self::$instance = new self();
         }
 
-        return static::$instance;
+        return self::$instance;
     }
 
     /**

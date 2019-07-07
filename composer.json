@@ -1,6 +1,6 @@
 {
-    "name": "luolongfei/push_class",
-    "description": "给肖阿姨推送每日课程，或者特殊日子。",
+    "name": "luolongfei/pusher",
+    "description": "推送机器人。",
     "type": "project",
     "require": {
         "php": ">=7.1.0",

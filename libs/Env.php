@@ -29,16 +29,16 @@ class Env
 
     public static function instance()
     {
-        if (static::$instance === null) {
-            static::$instance = new static();
+        if (!self::$instance instanceof Env) {
+            self::$instance = new self();
         }
 
-        return static::$instance;
+        return self::$instance;
     }
 
     public function load($fileName = '.env')
     {
-        if (null === self::$val) {
+        if (self::$val === null) {
             self::$val = Dotenv::create(ROOT_PATH, $fileName)->load();
         }
 

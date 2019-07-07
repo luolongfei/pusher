@@ -16,7 +16,7 @@ class ComposerStaticInit99b73a665e0d2066a2cb8dd066883cba
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         'c355e0897882ebe62200c783fabb8783' => __DIR__ . '/..' . '/hanson/vbot/src/Support/helpers.php',
-        '7a5538689d491cad40b71a8fb7a6626a' => __DIR__ . '/../..' . '/app/helpers.php',
+        '16c7d2b9a3c69348071f197e41d652fc' => __DIR__ . '/../..' . '/app/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (

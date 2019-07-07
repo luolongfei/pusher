@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dd45636d6963b043357d7547bb5ddea0",
+    "content-hash": "d37a464e6530bde04b4dbbfc72a2f67e",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -427,16 +427,16 @@
         },
         {
             "name": "hanson/vbot",
-            "version": "2.0.12",
+            "version": "2.0.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Hanson/vbot.git",
-                "reference": "6ad88348b28831c2cb18b92f52f807873da0abc7"
+                "reference": "9365738583deacd1d5840985a634186c94a060c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Hanson/vbot/zipball/6ad88348b28831c2cb18b92f52f807873da0abc7",
-                "reference": "6ad88348b28831c2cb18b92f52f807873da0abc7",
+                "url": "https://api.github.com/repos/Hanson/vbot/zipball/9365738583deacd1d5840985a634186c94a060c7",
+                "reference": "9365738583deacd1d5840985a634186c94a060c7",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -487,7 +487,7 @@
                 "微信机器人",
                 "机器人"
             ],
-            "time": "2019-03-23T15:15:23+00:00"
+            "time": "2019-06-28T09:01:04+00:00"
         },
         {
             "name": "illuminate/cache",

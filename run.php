@@ -42,7 +42,7 @@ function customize_error_handler()
 {
     if (!is_null($error = error_get_last())) {
         Log::error('程序意外终止', $error);
-//        Mail::instance()->send('主人，程序意外终止', '具体情况我也不知道，请查看服务器日志定位问题。');
+//        Mail::send('主人，程序意外终止', '具体情况我也不知道，请查看服务器日志定位问题。');
     }
 }
 
@@ -53,11 +53,15 @@ function customize_error_handler()
  */
 function exception_handler(Exception $e)
 {
-    Log::error('未捕获的异常: ' . $e->getMessage());
-    Mail::instance()->send('主人，未捕获的异常', "具体的异常内容是：\n" . $e->getMessage());
+    Log::error('未捕获的异常：' . $e->getMessage());
+    Mail::send('主人，未捕获的异常', "具体的异常内容是：\n" . $e->getMessage());
 }
 
-/**
- * php run.php --session=vbot
- */
-Pusher::instance()->handle();
+try {
+    /**
+     * php run.php --session=vbot
+     */
+    Pusher::instance()->handle();
+} catch (\Exception $e) {
+    Log::error('执行出错：' . $e->getMessage(), $e->getTrace());
+}
