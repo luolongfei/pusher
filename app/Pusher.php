@@ -103,18 +103,14 @@ class Pusher
             $friends = vbot('friends');
             $friend = $friends->getUsernameByRemarkName(config('girlfriendRemarkName'), false);
 
-            foreach (config('classes.' . date('w')) as $timeRange => $class) { // 只遍历当天的课程
-                $date = date('Y-m-d');
-                list($start, $end) = explode('-', $timeRange);
-
-                $fileName = str_replace(':', '_', $start);
+            foreach (config('classes.' . date('w')) as $time => $class) { // 只遍历当天的课程
+                $fileName = str_replace(':', '_', $time);
                 if (is_repeated($fileName)) {
                     usleep(500000);
                     continue;
                 }
 
-                $startTime = strtotime($date . ' ' . $start);
-                $endTime = strtotime($date . ' ' . $end);
+                $startTime = strtotime($time); // 仅传时分，默认为当天日期
                 $now = time();
 
                 if ($now <= $startTime && ($startTime - $now) <= config('inAdvance') && $class) { // 提前几分钟推送
@@ -155,15 +151,21 @@ class Pusher
                         }
                     }
 
-                    list($minute, $second) = explode('.', bcdiv($startTime - time(), 60, 2));
-                    $second = bcmul('0.' . $second, 60);
+                    $content = '';
+                    if (strlen($class) && $class[0] === '#') {
+                        $content .= str_replace('#', '', $class);
+                    } else {
+                        list($minute, $second) = explode('.', bcdiv($startTime - time(), 60, 2));
+                        $second = bcmul('0.' . $second, 60);
 
-                    $content = $class === '午睡' ? '该睡告告了。' : sprintf(
-                        '该上「%s」课啦，距上课还有%s分%s秒。',
-                        $class,
-                        $minute < 0 ? 0 : $minute,
-                        $second < 10 ? '0' . $second : $second
-                    );
+                        $content .= $class === '午睡' ? '该睡告告了。' : sprintf(
+                            '该上「%s」课啦，距上课还有%s分%s秒。',
+                            $class,
+                            $minute < 0 ? 0 : $minute,
+                            $second < 10 ? '0' . $second : $second
+                        );
+                    }
+
                     $content .= sprintf(
                         "\n\n今天是我们相识的第%s（第%s），正式相爱的第%s（第%s），想你的第%s~[爱心]\n\n%s",
                         self::LOVE(self::$MEET_DATE, 'd'),
