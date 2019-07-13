@@ -83,51 +83,44 @@ class CatDiscount
     {
         $rt = self::getPrice($origStr);
         if ($rt === false || empty($rt['info'])) {
-            return self::$rtErrorMsg ?: '[皱眉]查询价格的某个流程出错了。小伙子别慌，我已经在排查问题了。';
+            return self::$rtErrorMsg ?: '[皱眉][皱眉]查询价格的某个流程出错了。小伙子别慌，我已经在排查问题了。';
         }
 
-        $bd = '';
-        $ed = '';
-        $priceText = [];
-        $startDate = '';
-        $lastDate = '';
-        $price = 0;
-        $startText = '';
-        $count = count($rt['info']);
+        $allPrice = $rt['info'];
+        $count = 0;
         $sumVal = 0;
-        foreach ($rt['info'] as $key => $item) {
+        $hpr = 0;
+        $hprDt = '';
+        $lpr = 0;
+        $lprDt = '';
+        foreach ($allPrice as $item) {
             $dt = $item['dt'];
             $pr = $item['pr'];
+
+            // 最高价及出现日期
+            if ($pr >= $hpr) {
+                $hpr = $pr;
+                $hprDt = $dt;
+            }
+
+            // 最低价及出现日期
+            if ($lpr === 0 || $pr <= $lpr) {
+                $lpr = $pr;
+                $lprDt = $dt;
+            }
+
             $sumVal += $pr;
-
-            // 第一次进入时，只赋值
-            if ($key === 0) {
-                $startDate = $dt;
-                $lastDate = $dt;
-                $price = $pr;
-                $bd = $dt;
-                $ed = $dt; // 仅有一条数据时赋予正确的结束日期
-                continue;
-            }
-
-            // 价格变化，定位上个区间结束日期
-            if ($pr > $price || $pr < $price) {
-                $priceText[] = self::assembly($startText, $startDate, $lastDate, $price);
-                $startText = $pr > $price ? '升' : '降';
-                $startDate = $dt;
-                $price = $pr;
-            }
-
-            // 记录上一次日期
-            $lastDate = $dt;
-
-            // 单独处理最后一笔数据
-            if ($key === ($count - 1)) {
-                $priceText[] = self::assembly($startText, $startDate, $lastDate, $price);
-                $ed = $dt;
-            }
+            $count ++;
         }
-        $avg = $count ? bcdiv($sumVal, $count, 2) : '未知';
+
+        if ($count < 2) {
+            return '[囧][囧]我也不晓得这玩意儿的历史价格，没收录，刚看到，已经拿小本本记下来了。';
+        }
+        $avg = bcdiv($sumVal, $count, 2);
+        $startDate = $allPrice[0]['dt'];
+        $endDate = $allPrice[$count - 1]['dt'];
+        $currPr = $allPrice[$count - 1]['pr'];
+        $monthText = self::getIntervalMonthText($startDate, $endDate);
 
         /**
          * 当前走势
@@ -147,24 +140,86 @@ class CatDiscount
                 $trend = '价格平稳';
         }
 
-        $priceText = implode("\n", $priceText) ?: '[皱眉]我也不晓得价格走势，今天才收录，快走，再问打死你。';
         $goodsDetail = self::$rtData['goodsDetail'];
+
         $text = sprintf(
-            "[嘿哈]报告，商品「%s」过去半年（%s - %s）的价格走势如下\n%s\n历史最高价：%s元\n历史最低价：%s元\n过去半年平均价：%s元\n当前：%s\n该商品自上架以来共卖出%d件，分类于「%s」之下，店铺名为「%s」。\n画了个折线图说明一切，点击查看：xxx\n以上。",
+            "商品「%s」过去%s的价格情况如下\n\n历史最高价：%s元（%s）\n历史最低价：%s元(%s)\n历史平均价：%s元\n共卖出：%s件\n当前：%s元\n最近：%s\n\n以上",
             $goodsDetail['title'],
-            $bd,
-            $ed,
-            $priceText,
-            $rt['hpr'],
-            $rt['lpr'],
+            $monthText,
+            $hpr,
+            $hprDt,
+            $lpr,
+            $lprDt,
             $avg,
-            $trend,
             $goodsDetail['sellCount'],
-            $goodsDetail['cateName'],
-            $goodsDetail['merchantName']
+            $currPr,
+            $trend
         );
 
         return $text;
+    }
+
+    public static function getIntervalMonthText($startDate, $endDate)
+    {
+        $start = strtotime($startDate);
+        $end = strtotime($endDate);
+
+        $monthNum = (date('Y', $end) - date('Y', $start)) * 12 + (date('n', $end) - date('n', $start));
+
+        return sprintf(
+            '%s（%s至%s）',
+            $monthNum === 6 ? '半年' : sprintf('%d个月', $monthNum),
+            date('Y-m-d', $start),
+            date('Y-m-d', $end)
+        );
+    }
+
+    /**
+     * 价格数组转文言
+     * 将每一天的价格数据转为文言，多天同一价格组为一句文言，并在每条文言前标注价格升降情况
+     *
+     * @param array $allPrice
+     *
+     * @return string
+     */
+    public static function allPriceToText(array $allPrice)
+    {
+        $priceText = [];
+        $startDate = '';
+        $lastDate = '';
+        $price = 0;
+        $startText = '';
+        $count = count($allPrice);
+        foreach ($allPrice as $key => $item) {
+            $dt = $item['dt'];
+            $pr = $item['pr'];
+
+            // 第一次进入时，只赋值
+            if ($key === 0) {
+                $startDate = $dt;
+                $lastDate = $dt;
+                $price = $pr;
+                continue;
+            }
+
+            // 价格变化，定位上个区间结束日期
+            if ($pr > $price || $pr < $price) {
+                $priceText[] = self::assembly($startText, $startDate, $lastDate, $price);
+                $startText = $pr > $price ? '升' : '降';
+                $startDate = $dt;
+                $price = $pr;
+            }
+
+            // 记录上一次日期
+            $lastDate = $dt;
+
+            // 单独处理最后一笔数据
+            if ($key === ($count - 1)) {
+                $priceText[] = self::assembly($startText, $startDate, $lastDate, $price);
+            }
+        }
+
+        return implode("\n", $priceText);
     }
 
     /**
@@ -184,7 +239,7 @@ class CatDiscount
 
         // 商品已下架或来自亚马逊或当当
         if (!$standardUrl['status']) {
-            self::$rtErrorMsg = '[皱眉]出错了，可能是商品已下架或者是暂不支持查询的电商。';
+            self::$rtErrorMsg = '[皱眉][皱眉]出错了，可能是商品已下架或者是暂不支持查询的电商。';
 
             // TODO 支持亚马逊以及当当网查询
 
@@ -193,7 +248,7 @@ class CatDiscount
 
         $goodsDetail = self::getGoodsDetail($standardUrl['goodsId'], $standardUrl['shop']);
         if ($goodsDetail === false) {
-            self::$rtErrorMsg = '[皱眉]出错了，这可能是个不存在的商品，可能是商品已下架。';
+            self::$rtErrorMsg = '[皱眉][皱眉]查不了，可能是因为商品已下架。';
 
             return false;
         }
@@ -211,7 +266,7 @@ class CatDiscount
         if (!$response || $response['RC'] !== 1) {
             LOG::error('获取商品历史价格时出错', $response);
 //            Mail::send('报告，喵喵折获取商品历史价格时出错', '今次取得的响应为<br>' . var_export($response, true));
-            self::$rtErrorMsg = '[皱眉]获取商品历史价格出错，具体什么情况，咱也不知道，咱也没敢问。小伙子别慌，我已经在排查问题了。';
+            self::$rtErrorMsg = '[皱眉][皱眉]获取商品历史价格出错，具体什么情况，咱也不知道，咱也没敢问。小伙子别慌，我已经在排查问题了。';
 
             return false;
         }
