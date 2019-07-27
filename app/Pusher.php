@@ -9,6 +9,7 @@
 
 namespace Luolongfei\App;
 
+use Luolongfei\Lib\Base;
 use Luolongfei\Lib\Log;
 use Luolongfei\Lib\Curl;
 use Luolongfei\Lib\Mail;
@@ -25,7 +26,9 @@ use Hanson\Vbot\Message\Emoticon;
 use Hanson\Vbot\Message\Video;
 use Hanson\Vbot\Message\Voice;
 
-class Pusher
+use Luolongfei\Lib\POE;
+
+class Pusher extends Base
 {
     /**
      * MEET_DATE
@@ -152,8 +155,15 @@ class Pusher
                     }
 
                     $content = '';
-                    if (strlen($class) && $class[0] === '#') {
+                    if (strlen($class) && $class[0] === '#') { // 说晚安
                         $content .= str_replace('#', '', $class);
+
+                        // 先念一份诗歌或者文摘
+                        try {
+                            Text::send($friend, POE::getPoetry());
+                        } catch (\Exception $e) {
+                            Log::error('发送或获取诗歌文摘出错：' . $e->getMessage());
+                        }
                     } else {
                         list($minute, $second) = explode('.', bcdiv($startTime - time(), 60, 2));
                         $second = bcmul('0.' . $second, 60);
@@ -195,6 +205,14 @@ class Pusher
             try {
                 // 仅处理好友来信
                 if ($message['fromType'] === 'Friend') {
+                    // TODO 正则检查是否回复的1或降价提醒，如果是，通过发送者的username去redis查询，若有数据，将status改为1，过期时间改为永久
+                    // TODO 新加的batch，常驻专门读取redis中status=1的数据，拿url取得最新价格与现有价格做对比，低于现有价格，就给username发微信
+
+
+                    /*if (preg_match('/^(?:1+|降价提醒)$/', $message['message'])) {
+
+                    }*/
+
                     // 检查是否商品地址
                     $url = CatDiscount::shopUrlCheck($message['message']);
                     if ($url) {
@@ -203,6 +221,9 @@ class Pusher
 
                         // 原路返回
                         Text::send($message['from']['UserName'], $priceText);
+
+                        // TODO 保存数据到redis 以username作为键（若已存在则直接覆盖，且过期时间延长至2小时）
+                        // TODO 数据内容为username，url，currPrice，时间戳，status（0或1，1代表需要降价提醒的任务）   2小时过期
                     }
                 } else if ($message['fromType'] === 'Self') {
                     // TODO 处理自己的命令

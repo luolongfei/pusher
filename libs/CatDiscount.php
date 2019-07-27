@@ -227,7 +227,7 @@ class CatDiscount
      *
      * @param string $origStr
      *
-     * @return bool | array
+     * @return bool|array
      * @throws \Exception
      */
     public static function getPrice($origStr = '')
