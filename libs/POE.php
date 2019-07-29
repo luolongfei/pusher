@@ -57,33 +57,45 @@ class POE extends Base
         $ids = self::getPoetryIds();
 
         // 随机取一个诗歌ID
-        $id = $ids[mt_rand(0, count($ids) - 1)];
+//        $id = $ids[mt_rand(0, count($ids) - 1)];
 
-        $response = Curl::get(
-            self::POE_API_URL,
-            [
-                'controller' => 'poem',
-                's' => $id
-            ],
-            self::POE_IOS_APP
-        );
-        $response = json_decode($response, true);
+        foreach ($ids as $id) {
+            $response = Curl::get(
+                self::POE_API_URL,
+                [
+                    'controller' => 'poem',
+                    's' => $id
+                ],
+                self::POE_IOS_APP
+            );
+            $response = json_decode($response, true);
 
-        if (!isset($response[0]) || !isset($response[0]['response']) || $response[0]['response'] !== 'success') {
-            throw new \Exception('获取诗歌出错，今次响应内容为：' . json_encode($response));
+            if (!isset($response[0]) || !isset($response[0]['response']) || $response[0]['response'] !== 'success') {
+                throw new \Exception('获取诗歌出错，今次响应内容为：' . json_encode($response));
+            }
+            $rt = $response[0];
+            $artist = $rt['artist'];
+            $content = str_ireplace('|^n|', "\n", $rt['content']);
+            $title = $rt['title'];
+
+            if (preg_match('/(?:[A-Za-z]+|少有人走的路)/iu', $title . $artist)) { // 过滤英文翻译的诗歌，这类质量低的令人发指
+                sleep(1);
+                continue;
+            }
+
+            return sprintf(
+                "%s\n\n摘自 %s《%s》",
+                $content,
+                $artist,
+                $title
+            );
         }
-        $rt = $response[0];
 
-        return sprintf(
-            "%s\n\n摘自 %s《%s》",
-            str_ireplace('|^n|', "\n", $rt['content']),
-            $rt['artist'],
-            $rt['title']
-        );
+        throw new \Exception('获取诗歌ID组出错');
     }
 
     /**
-     * 获取诗歌ID
+     * 获取诗歌ID组
      *
      * @return array
      * @throws \Exception
@@ -101,7 +113,7 @@ class POE extends Base
         $response = json_decode($response, true);
 
         if (!isset($response[0]['response']) || $response[0]['response'] !== 'success') {
-            throw new \Exception('获取诗歌ID时出错，今次响应内容为：' . json_encode($response));
+            throw new \Exception('获取诗歌ID组出错，今次响应内容为：' . json_encode($response));
         }
 
         $ids = explode('^', $response[0]['count']);
