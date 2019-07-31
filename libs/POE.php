@@ -78,7 +78,7 @@ class POE extends Base
             $content = str_ireplace('|^n|', "\n", $rt['content']);
             $title = $rt['title'];
 
-            if (preg_match('/(?:[A-Za-z]+|少有人走的路|·)/iu', $title . $artist)) { // 过滤英文翻译的诗歌，这类质量低的令人发指
+            if (preg_match('/(?:[A-Za-z]+|少有人走的路|·)/iu', $title . $artist) || mb_strlen($artist) > 3) { // 过滤英文翻译的诗歌，这类质量低的令人发指
                 sleep(1);
                 continue;
             }
