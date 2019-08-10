@@ -93,9 +93,19 @@ class CatDiscount
         $hprDt = '';
         $lpr = 0;
         $lprDt = '';
+        $changeNum = 0;
+        $lastPr = 0;
         foreach ($allPrice as $item) {
             $dt = $item['dt'];
             $pr = $item['pr'];
+
+            // 记录价格变动次数
+            if ($lastPr === 0) {
+                $lastPr = $pr;
+            } else if ($pr !== $lastPr) {
+                $lastPr = $pr;
+                $changeNum++;
+            }
 
             // 最高价及出现日期
             if ($pr >= $hpr) {
@@ -110,7 +120,7 @@ class CatDiscount
             }
 
             $sumVal += $pr;
-            $count ++;
+            $count++;
         }
 
         if ($count < 2) {
@@ -143,83 +153,27 @@ class CatDiscount
         $goodsDetail = self::$rtData['goodsDetail'];
 
         $text = sprintf(
-            "商品「%s」过去%s的价格情况如下\n\n历史最高价：%s元（%s）\n历史最低价：%s元(%s)\n历史平均价：%s元\n共卖出：%s件\n当前：%s元\n最近：%s\n\n以上",
+            "商品「%s」过去%s的价格情况如下\n\n%s\n共卖出：%s件\n价格共变动：%d次\n当前：%s元\n最近：%s\n\n以上",
             $goodsDetail['title'],
             $monthText,
-            $hpr,
-            $hprDt,
-            $lpr,
-            $lprDt,
-            $avg,
+            $changeNum === 0 ? sprintf(
+                '历史价格暂无变动，一直是%d元',
+                $currPr
+            ) : sprintf(
+                "历史最高价：%s元（%s）\n历史最低价：%s元(%s)\n历史平均价：%s元",
+                $hpr,
+                $hprDt,
+                $lpr,
+                $lprDt,
+                $avg
+            ),
             $goodsDetail['sellCount'],
+            $changeNum,
             $currPr,
             $trend
         );
 
         return $text;
-    }
-
-    public static function getIntervalMonthText($startDate, $endDate)
-    {
-        $start = strtotime($startDate);
-        $end = strtotime($endDate);
-
-        $monthNum = (date('Y', $end) - date('Y', $start)) * 12 + (date('n', $end) - date('n', $start));
-
-        return sprintf(
-            '%s（%s至%s）',
-            $monthNum === 6 ? '半年' : sprintf('%d个月', $monthNum),
-            date('Y-m-d', $start),
-            date('Y-m-d', $end)
-        );
-    }
-
-    /**
-     * 价格数组转文言
-     * 将每一天的价格数据转为文言，多天同一价格组为一句文言，并在每条文言前标注价格升降情况
-     *
-     * @param array $allPrice
-     *
-     * @return string
-     */
-    public static function allPriceToText(array $allPrice)
-    {
-        $priceText = [];
-        $startDate = '';
-        $lastDate = '';
-        $price = 0;
-        $startText = '';
-        $count = count($allPrice);
-        foreach ($allPrice as $key => $item) {
-            $dt = $item['dt'];
-            $pr = $item['pr'];
-
-            // 第一次进入时，只赋值
-            if ($key === 0) {
-                $startDate = $dt;
-                $lastDate = $dt;
-                $price = $pr;
-                continue;
-            }
-
-            // 价格变化，定位上个区间结束日期
-            if ($pr > $price || $pr < $price) {
-                $priceText[] = self::assembly($startText, $startDate, $lastDate, $price);
-                $startText = $pr > $price ? '升' : '降';
-                $startDate = $dt;
-                $price = $pr;
-            }
-
-            // 记录上一次日期
-            $lastDate = $dt;
-
-            // 单独处理最后一笔数据
-            if ($key === ($count - 1)) {
-                $priceText[] = self::assembly($startText, $startDate, $lastDate, $price);
-            }
-        }
-
-        return implode("\n", $priceText);
     }
 
     /**
@@ -354,6 +308,76 @@ class CatDiscount
         self::$rtData['goodsDetail'] = $goodsDetail;
 
         return $goodsDetail;
+    }
+
+    public static function getIntervalMonthText($startDate, $endDate)
+    {
+        $start = strtotime($startDate);
+        $end = strtotime($endDate);
+
+        $monthNum = (date('Y', $end) - date('Y', $start)) * 12 + (date('n', $end) - date('n', $start));
+        if ($monthNum === 6) {
+            $text = '半年';
+        } else if ($monthNum === 0) {
+            $text = sprintf('%d天', floor(($end - $start) / 86400));
+        } else {
+            $text = sprintf('%d个月', $monthNum);
+        }
+
+        return sprintf(
+            '%s（%s至%s）',
+            $text,
+            date('Y-m-d', $start),
+            date('Y-m-d', $end)
+        );
+    }
+
+    /**
+     * 价格数组转文言
+     * 将每一天的价格数据转为文言，多天同一价格组为一句文言，并在每条文言前标注价格升降情况
+     *
+     * @param array $allPrice
+     *
+     * @return string
+     */
+    public static function allPriceToText(array $allPrice)
+    {
+        $priceText = [];
+        $startDate = '';
+        $lastDate = '';
+        $price = 0;
+        $startText = '';
+        $count = count($allPrice);
+        foreach ($allPrice as $key => $item) {
+            $dt = $item['dt'];
+            $pr = $item['pr'];
+
+            // 第一次进入时，只赋值
+            if ($key === 0) {
+                $startDate = $dt;
+                $lastDate = $dt;
+                $price = $pr;
+                continue;
+            }
+
+            // 价格变化，定位上个区间结束日期
+            if ($pr > $price || $pr < $price) {
+                $priceText[] = self::assembly($startText, $startDate, $lastDate, $price);
+                $startText = $pr > $price ? '升' : '降';
+                $startDate = $dt;
+                $price = $pr;
+            }
+
+            // 记录上一次日期
+            $lastDate = $dt;
+
+            // 单独处理最后一笔数据
+            if ($key === ($count - 1)) {
+                $priceText[] = self::assembly($startText, $startDate, $lastDate, $price);
+            }
+        }
+
+        return implode("\n", $priceText);
     }
 
     /**
