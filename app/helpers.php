@@ -40,6 +40,8 @@ if (!function_exists('config')) {
                 if (isset($allConfig[$key])) {
                     return $allConfig[$key];
                 }
+
+                return null;
             }
         }
 

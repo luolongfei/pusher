@@ -81,6 +81,7 @@ class POE extends Base
             if (preg_match('/(?:[A-Za-z]+|少有人走的路|·)/iu', $title . $artist)
                 || mb_strlen($artist) > 3
                 || $artist === '叶芝'
+                || $artist === '木心' // 太几把成人了，他妈的
                 || mb_strlen(str_ireplace("\n", '', $content)) > 332) { // 过滤英文翻译的诗歌，这类质量低的令人发指
                 sleep(1);
                 continue;
