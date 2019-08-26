@@ -16,6 +16,7 @@ use Luolongfei\Lib\Mail;
 use Luolongfei\Lib\CatDiscount;
 
 use Hanson\Vbot\Foundation\Vbot as Robot;
+use Luolongfei\Lib\MysqlPDO;
 use Vbot\Blacklist\Blacklist;
 use Vbot\GuessNumber\GuessNumber;
 use Vbot\HotGirl\HotGirl;

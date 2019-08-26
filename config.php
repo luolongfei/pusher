@@ -123,6 +123,15 @@ return [
         'debug' => 0, // debug，当邮件无法发送的情况下开启此项观察命令行界面提示信息，正式环境应关闭 0：关闭 1：客户端信息 2：客户端和服务端信息
     ],
 
+    'mysql' => [
+        'host' => env('DB_HOST', '127.0.0.1'),
+        'port' => env('DB_PORT', '3306'),
+        'database' => env('DB_DATABASE', ''),
+        'username' => env('DB_USERNAME', ''),
+        'password' => env('DB_PASSWORD', ''),
+        'charset' => 'utf8mb4',
+    ],
+
     /**
      * 指定关键字，用于过滤低质量诗词
      */
