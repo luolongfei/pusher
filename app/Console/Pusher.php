@@ -7,7 +7,7 @@
  * @time 17:46
  */
 
-namespace Luolongfei\App;
+namespace Luolongfei\App\Console;
 
 use Luolongfei\Lib\Base;
 use Luolongfei\Lib\Log;

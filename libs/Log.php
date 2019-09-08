@@ -32,7 +32,7 @@ class Log
     {
         if (!self::$instance instanceof Logger) {
             $handler = new StreamHandler(
-                config('stdout') ? 'php://stdout' : ROOT_PATH . 'logs/' . date('Y-m-d') . '/push.log',
+                config('stdout') ? 'php://stdout' : ROOT_PATH . '/logs/' . date('Y-m-d') . '/push.log',
                 config('debug') ? Logger::DEBUG : Logger::INFO
             );
             if (config('stdout')) {

@@ -1,34 +1,36 @@
 {
-    "name": "luolongfei/pusher",
-    "description": "推送机器人。",
-    "type": "project",
-    "require": {
-        "php": ">=7.1.0",
-        "ext-curl": "*",
-        "ext-openssl": "*",
-        "guzzlehttp/guzzle": "^6.3",
-        "monolog/monolog": "^1.24",
-        "bramus/monolog-colored-line-formatter": "~2.0",
-        "hanson/vbot": "^2.0",
-        "phpmailer/phpmailer": "^6.0",
-        "vlucas/phpdotenv": "^3.3",
-        "predis/predis": "^1.1"
-    },
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "luolongfei",
-            "email": "mybsdc@gmail.com",
-            "homepage": "https://www.google.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "Luolongfei\\Lib\\": "libs",
-            "Luolongfei\\App\\": "app"
-        },
-        "files": [
-            "app/helpers.php"
-        ]
+  "name": "luolongfei/pusher",
+  "description": "推送机器人。",
+  "type": "project",
+  "require": {
+    "php": ">=7.1.0",
+    "ext-curl": "*",
+    "ext-openssl": "*",
+    "guzzlehttp/guzzle": "^6.3",
+    "monolog/monolog": "^1.24",
+    "bramus/monolog-colored-line-formatter": "~2.0",
+    "hanson/vbot": "^2.0",
+    "phpmailer/phpmailer": "^6.0",
+    "vlucas/phpdotenv": "^3.3",
+    "predis/predis": "^1.1",
+    "ext-json": "*",
+    "ext-bcmath": "*"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "luolongfei",
+      "email": "mybsdc@gmail.com",
+      "homepage": "https://www.google.com"
     }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Luolongfei\\Lib\\": "libs",
+      "Luolongfei\\App\\": "app"
+    },
+    "files": [
+      "app/helpers.php"
+    ]
+  }
 }

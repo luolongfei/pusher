@@ -62,7 +62,7 @@ if (!function_exists('is_repeated')) {
     function is_repeated($fileName = '', $path = '')
     {
         try {
-            $path = $path ?: APP_PATH . 'prevent_duplication/' . date('Y-m-d') . '/';
+            $path = $path ?: APP_PATH . '/prevent_duplication/' . date('Y-m-d') . '/';
             $file = $path . $fileName . '.php';
 
             if (file_exists($file)) return true;
@@ -89,7 +89,7 @@ if (!function_exists('create_file')) {
     function create_file($fileName = '', $content = '未指定写入内容', $path = '')
     {
         try {
-            $path = $path ?: APP_PATH . 'prevent_duplication/' . date('Y-m-d') . '/';
+            $path = $path ?: APP_PATH . '/prevent_duplication/' . date('Y-m-d') . '/';
             $file = $path . $fileName . '.php';
 
             if (!is_dir($path)) {

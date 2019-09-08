@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 /**
  * Pusher
@@ -14,9 +15,10 @@ set_time_limit(0);
 
 define('IS_CLI', PHP_SAPI === 'cli' ? true : false);
 define('DS', DIRECTORY_SEPARATOR);
-define('VENDOR_PATH', realpath('vendor') . DS);
-define('APP_PATH', realpath('app') . DS);
-define('ROOT_PATH', realpath(APP_PATH . '..') . DS);
+define('ROOT_PATH', realpath(__DIR__));
+define('VENDOR_PATH', realpath(ROOT_PATH . '/vendor'));
+define('APP_PATH', realpath(ROOT_PATH . '/app'));
+define('RESOURCES_PATH', realpath(ROOT_PATH . '/resources'));
 
 date_default_timezone_set('Asia/Shanghai');
 
@@ -30,10 +32,10 @@ register_shutdown_function('customize_error_handler');
  */
 set_exception_handler('exception_handler');
 
-require VENDOR_PATH . 'autoload.php';
+require VENDOR_PATH . '/autoload.php';
 
 use Luolongfei\Lib\Log;
-use Luolongfei\App\Pusher;
+use Luolongfei\App\Console\Pusher;
 use Luolongfei\Lib\Mail;
 
 /**
@@ -50,9 +52,9 @@ function customize_error_handler()
 /**
  * @param $e
  *
- * @throws Exception
+ * @throws \Exception
  */
-function exception_handler(Exception $e)
+function exception_handler(\Exception $e)
 {
     Log::error('未捕获的异常：' . $e->getMessage());
     Mail::send('主人，未捕获的异常', "具体的异常内容是：\n" . $e->getMessage());

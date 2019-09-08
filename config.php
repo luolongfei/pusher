@@ -159,7 +159,7 @@ return [
      * 微信机器人配置
      */
     'weChat' => [
-        'path' => APP_PATH . 'tmp/',
+        'path' => ROOT_PATH . '/logs/WeChat/',
 
         /*
          * swoole 配置项，执行主动发消息命令必须开启
@@ -179,7 +179,7 @@ return [
             'video' => false,
             'emoticon' => true,
             'file' => false,
-            'emoticon_path' => APP_PATH . 'tmp/emoticons/',
+            'emoticon_path' => ROOT_PATH . '/logs/WeChat/emoticons/',
         ],
 
         /*
@@ -196,8 +196,8 @@ return [
         'log' => [
             'level' => 'debug',
             'permission' => 0777,
-            'system' => APP_PATH . 'tmp/log',
-            'message' => APP_PATH . 'tmp/log',
+            'system' => ROOT_PATH . '/logs/WeChat/log',
+            'message' => ROOT_PATH . '/logs/WeChat/log',
         ],
 
         /*
@@ -208,7 +208,7 @@ return [
             'stores' => [
                 'file' => [
                     'driver' => 'file',
-                    'path' => APP_PATH . 'tmp/cache',
+                    'path' => ROOT_PATH . '/logs/WeChat/cache',
                 ],
                 'redis' => [
                     'driver' => 'redis',

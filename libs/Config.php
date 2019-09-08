@@ -40,7 +40,7 @@ class Config
     public static function getConfig()
     {
         if (self::$config === null) {
-            self::$config = require ROOT_PATH . 'config.php';
+            self::$config = require ROOT_PATH . '/config.php';
         }
 
         return self::$config;

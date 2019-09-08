@@ -10,7 +10,7 @@
 namespace Luolongfei\Lib;
 
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\Exception AS MailException;
 
 class Mail
 {
@@ -21,7 +21,7 @@ class Mail
 
     /**
      * @return PHPMailer
-     * @throws Exception
+     * @throws MailException
      */
     public static function mail()
     {
@@ -84,18 +84,18 @@ class Mail
          * self::mail()->Body = '正文'; // 支持html
          * self::mail()->AltBody = 'This is an HTML-only message. To view it, activate HTML in your email application.'; // 纯文本消息正文。不支持html预览的邮件客户端将显示此预览消息，其它情况将显示正常的body
          */
-        $template = file_get_contents(APP_PATH . 'mail/' . ($template ?: 'default') . '.html');
+        $template = file_get_contents(RESOURCES_PATH . '/mail/' . ($template ?: 'default') . '.html');
         if (is_array($content)) {
             array_unshift($content, $template);
             $message = call_user_func_array('sprintf', $content);
         } else if (is_string($content)) {
             $message = sprintf($template, $content);
         } else {
-            throw new \Exception();
+            throw new MailException('邮件内容格式错误，仅支持传入数组或字符串');
         }
 
-        self::mail()->msgHTML($message, APP_PATH . 'mail');
+        self::mail()->msgHTML($message, APP_PATH . '/mail');
 
-        if (!self::mail()->send()) throw new \Exception(self::mail()->ErrorInfo);
+        if (!self::mail()->send()) throw new MailException(self::mail()->ErrorInfo);
     }
 }
