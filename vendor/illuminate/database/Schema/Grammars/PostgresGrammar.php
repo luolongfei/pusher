@@ -19,7 +19,7 @@ class PostgresGrammar extends Grammar
      *
      * @var array
      */
-    protected $modifiers = ['Increment', 'Nullable', 'Default'];
+    protected $modifiers = ['Collate', 'Increment', 'Nullable', 'Default'];
 
     /**
      * The columns available as serials.
@@ -200,7 +200,7 @@ class PostgresGrammar extends Grammar
     /**
      * Compile the SQL needed to drop all tables.
      *
-     * @param  string  $tables
+     * @param  array  $tables
      * @return string
      */
     public function compileDropAllTables($tables)
@@ -211,7 +211,7 @@ class PostgresGrammar extends Grammar
     /**
      * Compile the SQL needed to drop all views.
      *
-     * @param  string  $views
+     * @param  array  $views
      * @return string
      */
     public function compileDropAllViews($views)
@@ -877,6 +877,20 @@ class PostgresGrammar extends Grammar
     private function formatPostGisType(string $type)
     {
         return "geography($type, 4326)";
+    }
+
+    /**
+     * Get the SQL for a collation column modifier.
+     *
+     * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
+     * @param  \Illuminate\Support\Fluent  $column
+     * @return string|null
+     */
+    protected function modifyCollate(Blueprint $blueprint, Fluent $column)
+    {
+        if (! is_null($column->collation)) {
+            return ' collate '.$this->wrapValue($column->collation);
+        }
     }
 
     /**
