@@ -66,5 +66,5 @@ try {
      */
     Pusher::instance()->handle();
 } catch (\Exception $e) {
-    Log::error('执行出错：' . $e->getMessage(), $e->getTrace());
+    system_log('执行出错：' . $e->getMessage(), $e->getTrace());
 }

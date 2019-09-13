@@ -32,16 +32,6 @@ use Luolongfei\Lib\POE;
 class Pusher extends Base
 {
     /**
-     * MEET_DATE
-     */
-    protected static $MEET_DATE;
-
-    /**
-     * LOVE_DATE_START
-     */
-    protected static $LOVE_DATE_START;
-
-    /**
      * @var Pusher
      */
     protected static $instance;
@@ -58,9 +48,6 @@ class Pusher extends Base
 
     public function __construct($session = null)
     {
-        self::$MEET_DATE = config('meetDate');
-        self::$LOVE_DATE_START = config('loveDateStart');
-
         $this->config = config('weChat');
 
         if ($session) {
@@ -80,16 +67,9 @@ class Pusher extends Base
         return self::$instance;
     }
 
-    public static function getWeek()
-    {
-        $week = ['天', '一', '二', '三', '四', '五', '六']; // 0（表示星期天）到 6（表示星期六）
-
-        return '星期' . $week[date('w')];
-    }
-
     /**
      * @return bool
-     * @throws \Exception
+     * @throws \Hanson\Vbot\Exceptions\ArgumentException
      */
     public function handle()
     {
@@ -102,104 +82,8 @@ class Pusher extends Base
         $messageHandler = $weChat->messageHandler;
 
         // 一直触发
-        $messageHandler->setCustomHandler(function () {
-//            Log::info('触发执行，心跳检出');
-            $friends = vbot('friends');
-            $friend = $friends->getUsernameByRemarkName(config('girlfriendRemarkName'), false);
-
-            foreach (config('classes.' . date('w')) as $time => $class) { // 只遍历当天的课程
-                $fileName = str_replace(':', '_', $time);
-                if (is_repeated($fileName)) {
-                    usleep(500000);
-                    continue;
-                }
-
-                $startTime = strtotime($time); // 仅传时分，默认为当天日期
-                $now = time();
-
-                if ($now <= $startTime && ($startTime - $now) <= config('inAdvance') && $class) { // 提前几分钟推送
-                    $num = 0;
-                    while (true) {
-                        try {
-                            // 随机诗词
-                            $poetryApi = [
-                                'shuqing/aiqing',
-                                'shuqing/sinian',
-                                'rensheng/lizhi',
-                            ];
-                            $poetry = Curl::get(sprintf('https://api.gushi.ci/%s.json', $poetryApi[mt_rand(0, count($poetryApi) - 1)]));
-                            $poetry = json_decode($poetry, true);
-
-                            $poetrySummary = '';
-                            $poetryContent = isset($poetry['content']) ? $poetry['content'] : '';
-                            if (!$poetryContent) {
-                                throw new \Exception('诗词接口返回的数据异常');
-                            }
-
-                            $poetrySummary = sprintf(
-                                "%s",
-                                $poetryContent
-                            );
-
-                            if (self::poetryCheck($poetrySummary)) {
-                                break;
-                            }
-
-                            $num++;
-                            Log::info(sprintf('检出低质量诗词，拼接内容为：%s  处理：已丢弃并重新获取。重试次数：%d', $poetrySummary, $num));
-
-                            sleep(1);
-                        } catch (\Exception $e) {
-                            Log::error('获取随机诗词出错：' . $e->getMessage());
-                            break;
-                        }
-                    }
-
-                    $content = '';
-                    if (strlen($class) && $class[0] === '#') { // 说晚安
-                        $content .= str_replace('#', '', $class);
-
-                        // 先念一份诗歌或者文摘
-                        try {
-                            Text::send($friend, POE::getPoetry());
-                        } catch (\Exception $e) {
-                            Log::error('发送或获取诗歌文摘出错：' . $e->getMessage());
-                        }
-                    } else {
-                        list($minute, $second) = explode('.', bcdiv($startTime - time(), 60, 2));
-                        $second = bcmul('0.' . $second, 60);
-
-                        $content .= $class === '午睡' ? '该睡告告了。' : sprintf(
-                            '该上「%s」课啦，距上课还有%s分%s秒。',
-                            $class,
-                            $minute < 0 ? 0 : $minute,
-                            $second < 10 ? '0' . $second : $second
-                        );
-                    }
-
-                    $content .= sprintf(
-                        "\n\n今天是我们相识的第%s（第%s），正式相爱的第%s（第%s），想你的第%s~[爱心]\n\n%s",
-                        self::LOVE(self::$MEET_DATE, 'd'),
-                        self::LOVE(self::$MEET_DATE, 'm'),
-                        self::LOVE(self::$LOVE_DATE_START, 'd'),
-                        self::LOVE(self::$LOVE_DATE_START, 'm'),
-                        self::LOVE(self::$LOVE_DATE_START, 'h'),
-                        $poetrySummary
-                    );
-
-                    $rt = Text::send($friend, $content);
-
-                    if ($rt === false) {
-                        Log::error('消息发送失败');
-                        Mail::send('主人，消息推送失败', "消息内容：\n" . (string)$content);
-                    }
-
-                    create_file($fileName, $rt);
-                }
-            }
-
-            usleep(500000); // 防止执行过快，内存占用过高
-        });
+        /*$messageHandler->setCustomHandler(function () {
+        });*/
 
         // 收到消息时触发
         $messageHandler->setHandler(function (Collection $message) {
@@ -230,7 +114,7 @@ class Pusher extends Base
                     // TODO 处理自己的命令
                 }
             } catch (\Exception $e) {
-                Log::error('收到消息处理时发生错误: ', $e->getMessage());
+                Log::error('收到消息处理时发生错误: ' . $e->getMessage());
             }
         });
 
@@ -268,78 +152,6 @@ class Pusher extends Base
         });
 
         $weChat->server->serve();
-
-        /*$startHandleTime = time();
-
-        while (true) {
-            if ((time() - $startHandleTime) > 1800) { // 每次循环半小时，挂起后由Supervisor重新拉起
-                break;
-            }
-
-            foreach (config('classes.' . date('w')) as $timeRange => $class) { // 只遍历当天的课程
-                $date = date('Y-m-d');
-                list($start, $end) = explode('-', $timeRange);
-
-                $fileName = str_replace(':', '_', $start);
-                if (is_repeated($fileName)) {
-                    usleep(500000);
-                    continue;
-                }
-
-                $startTime = strtotime($date . ' ' . $start);
-                $endTime = strtotime($date . ' ' . $end);
-                $now = time();
-
-                if ($now <= $startTime && ($startTime - $now) <= config('inAdvance') && $class) { // 提前几分钟推送
-                    try {
-                        // 随机诗词
-                        $poetryApi = [
-                            'shuqing/aiqing',
-                        ];
-                        $poetry = Curl::get(sprintf('https://api.gushi.ci/%s.json', $poetryApi[mt_rand(0, count($poetryApi) - 1)]));
-                        $poetry = json_decode($poetry, true);
-
-                        $poetrySummary = '';
-                        $poetryContent = isset($poetry['content']) ? $poetry['content'] : '';
-                        if (!$poetryContent) {
-                            throw new \Exception('诗词接口返回的数据异常');
-                        }
-
-                        $poetrySummary = sprintf(
-                            "诗词取自%s写的《%s》, 分类于「%s」之下。\n\n%s\n\n报告完毕。阿姨开始上课吧啦啦啦~",
-                            $poetry['author'],
-                            $poetry['origin'],
-                            $poetry['category'],
-                            $poetryContent
-                        );
-                    } catch (\Exception $e) {
-                        Log::error('获取随机诗词出错：' . $e->getMessage());
-                    }
-
-                    list($minute, $second) = explode('.', bcdiv($startTime - time(), 60, 2));
-                    $second = bcmul('0.' . $second, 60);
-
-                    $title = sprintf(
-                        '阿姨，该上「%s」课啦，距上课还有%s分%s秒。',
-                        $class,
-                        $minute < 0 ? 0 : $minute,
-                        $second < 10 ? '0' . $second : $second
-                    );
-                    $content = sprintf(
-                        "今天是相识的第%s天，正式相爱的第%s天，第%s个小时。师父正在\n想你~\n%s\nby 师父",
-                        self::LOVE(self::$MEET_DATE),
-                        self::LOVE(),
-                        self::LOVE(self::$LOVE_DATE_START, 'h'),
-                        $poetrySummary
-                    );
-
-                    $rt = ServerChan::send($title, $content);
-                    create_file($fileName, $rt);
-                }
-            }
-
-            usleep(500000); // 防止执行过快，内存占用过高
-        }*/
 
         return true;
     }
@@ -383,35 +195,5 @@ class Pusher extends Base
         $regex = sprintf('/(?:%s)/i', ltrim($regex, '|'));
 
         return preg_match($regex, $poetry) === 0;
-    }
-
-    /**
-     * 恋爱日期获取
-     *
-     * @param string $date
-     * @param string $timeType m:month|h:hour|d:day
-     *
-     * @return string
-     */
-    public static function LOVE($date = '', $timeType = 'd')
-    {
-        $date = $date ?: self::$LOVE_DATE_START;
-        $start = strtotime($date);
-
-        $time = '无穷大';
-        switch ($timeType) {
-            case 'm':
-                $monthNum = (date('Y') - date('Y', $start)) * 12 + (date('n') - date('n', $start));
-                $time = sprintf('%d个月', $monthNum);
-                break;
-            case 'd':
-                $time = sprintf('%d天', ceil((time() - $start) / (24 * 3600)));
-                break;
-            case 'h':
-                $time = sprintf('%d个小时', ceil((time() - $start) / 3600));
-                break;
-        }
-
-        return $time;
     }
 }
