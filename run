@@ -62,7 +62,7 @@ function exception_handler(\Exception $e)
 
 try {
     /**
-     * php run.php --session=vbot
+     * php run --session=vbot
      */
     Pusher::instance()->handle();
 } catch (\Exception $e) {
