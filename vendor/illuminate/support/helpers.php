@@ -638,7 +638,7 @@ if (! function_exists('env')) {
      * @param  mixed   $default
      * @return mixed
      */
-    function env($key, $default = null)
+    /*function env($key, $default = null)
     {
         static $variables;
 
@@ -672,7 +672,7 @@ if (! function_exists('env')) {
             ->getOrCall(function () use ($default) {
                 return value($default);
             });
-    }
+    }*/
 }
 
 if (! function_exists('filled')) {

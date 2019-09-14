@@ -70,6 +70,7 @@ class Pusher extends Base
     /**
      * @return bool
      * @throws \Hanson\Vbot\Exceptions\ArgumentException
+     * @throws \Exception
      */
     public function handle()
     {
