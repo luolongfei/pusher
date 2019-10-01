@@ -100,7 +100,7 @@ class Pusher extends Base
                     }*/
 
                     // 检查是否商品地址
-                    $url = CatDiscount::shopUrlCheck($message['message']);
+                    $url = CatDiscount::goodsUrlCheck($message['message']);
                     if ($url) {
                         // 获取价格文言
                         $priceText = CatDiscount::getPriceText($url);

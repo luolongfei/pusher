@@ -153,7 +153,7 @@ class CatDiscount
         $goodsDetail = self::$rtData['goodsDetail'];
 
         $text = sprintf(
-            "商品「%s」过去%s的价格情况如下\n\n%s\n共卖出：%s件\n价格共变动：%d次\n当前：%s元\n最近：%s\n\n以上",
+            "商品「%s」过去%s的价格情况如下\n\n%s\n共卖出：%s\n价格共变动：%d次\n当前：%s元\n最近：%s\n\n以上",
             $goodsDetail['title'],
             $monthText,
             $changeNum === 0 ? sprintf(
@@ -167,7 +167,7 @@ class CatDiscount
                 $lprDt,
                 $avg
             ),
-            $goodsDetail['sellCount'],
+            $goodsDetail['sellCount'] ? sprintf('%s件', $goodsDetail['sellCount']) : '无人购买或未知',
             $changeNum,
             $currPr,
             $trend
@@ -399,9 +399,9 @@ class CatDiscount
         return sprintf('[%s] %s - %s：%s元', $startText ?: '始', $startDate, $lastDate, $price);
     }
 
-    public static function shopUrlCheck($origStr = '', $rules = [])
+    public static function goodsUrlCheck($origStr = '', $rules = [])
     {
-        $rules = $rules ?: config('shopUrlRegex');
+        $rules = $rules ?: config('goodsUrlRegex');
         if (empty($rules)) {
             return false;
         }
