@@ -1107,17 +1107,17 @@
     },
     {
         "name": "nesbot/carbon",
-        "version": "1.39.0",
-        "version_normalized": "1.39.0.0",
+        "version": "1.39.1",
+        "version_normalized": "1.39.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/briannesbitt/Carbon.git",
-            "reference": "dd62a58af4e0775a45ea5f99d0363d81b7d9a1e0"
+            "reference": "4be0c005164249208ce1b5ca633cd57bdd42ff33"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/dd62a58af4e0775a45ea5f99d0363d81b7d9a1e0",
-            "reference": "dd62a58af4e0775a45ea5f99d0363d81b7d9a1e0",
+            "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/4be0c005164249208ce1b5ca633cd57bdd42ff33",
+            "reference": "4be0c005164249208ce1b5ca633cd57bdd42ff33",
             "shasum": "",
             "mirrors": [
                 {
@@ -1136,7 +1136,7 @@
             "friendsofphp/php-cs-fixer": "~2",
             "phpunit/phpunit": "^4.8.35 || ^5.7"
         },
-        "time": "2019-06-11T09:07:59+00:00",
+        "time": "2019-10-14T05:51:36+00:00",
         "bin": [
             "bin/upgrade-carbon"
         ],
@@ -1176,17 +1176,17 @@
     },
     {
         "name": "phpmailer/phpmailer",
-        "version": "v6.0.7",
-        "version_normalized": "6.0.7.0",
+        "version": "v6.1.1",
+        "version_normalized": "6.1.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/PHPMailer/PHPMailer.git",
-            "reference": "0c41a36d4508d470e376498c1c0c527aa36a2d59"
+            "reference": "26bd96350b0b2fcbf0ef4e6f0f9cf3528302a9d8"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/0c41a36d4508d470e376498c1c0c527aa36a2d59",
-            "reference": "0c41a36d4508d470e376498c1c0c527aa36a2d59",
+            "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/26bd96350b0b2fcbf0ef4e6f0f9cf3528302a9d8",
+            "reference": "26bd96350b0b2fcbf0ef4e6f0f9cf3528302a9d8",
             "shasum": "",
             "mirrors": [
                 {
@@ -1217,7 +1217,7 @@
             "stevenmaguire/oauth2-microsoft": "Needed for Microsoft XOAUTH2 authentication",
             "symfony/polyfill-mbstring": "To support UTF-8 if the Mbstring PHP extension is not enabled (^1.2)"
         },
-        "time": "2019-02-01T15:04:28+00:00",
+        "time": "2019-09-27T21:33:43+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -1227,16 +1227,16 @@
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
-            "LGPL-2.1"
+            "LGPL-2.1-only"
         ],
         "authors": [
             {
-                "name": "Jim Jagielski",
-                "email": "jimjag@gmail.com"
-            },
-            {
                 "name": "Marcus Bointon",
                 "email": "phpmailer@synchromedia.co.uk"
+            },
+            {
+                "name": "Jim Jagielski",
+                "email": "jimjag@gmail.com"
             },
             {
                 "name": "Andy Prevost",
@@ -1640,17 +1640,17 @@
     },
     {
         "name": "symfony/console",
-        "version": "v4.3.4",
-        "version_normalized": "4.3.4.0",
+        "version": "v4.3.5",
+        "version_normalized": "4.3.5.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/console.git",
-            "reference": "de63799239b3881b8a08f8481b22348f77ed7b36"
+            "reference": "929ddf360d401b958f611d44e726094ab46a7369"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/console/zipball/de63799239b3881b8a08f8481b22348f77ed7b36",
-            "reference": "de63799239b3881b8a08f8481b22348f77ed7b36",
+            "url": "https://api.github.com/repos/symfony/console/zipball/929ddf360d401b958f611d44e726094ab46a7369",
+            "reference": "929ddf360d401b958f611d44e726094ab46a7369",
             "shasum": "",
             "mirrors": [
                 {
@@ -1688,7 +1688,7 @@
             "symfony/lock": "",
             "symfony/process": ""
         },
-        "time": "2019-08-26T08:26:39+00:00",
+        "time": "2019-10-07T12:36:49+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1723,17 +1723,17 @@
     },
     {
         "name": "symfony/finder",
-        "version": "v4.3.4",
-        "version_normalized": "4.3.4.0",
+        "version": "v4.3.5",
+        "version_normalized": "4.3.5.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/finder.git",
-            "reference": "86c1c929f0a4b24812e1eb109262fc3372c8e9f2"
+            "reference": "5e575faa95548d0586f6bedaeabec259714e44d1"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/finder/zipball/86c1c929f0a4b24812e1eb109262fc3372c8e9f2",
-            "reference": "86c1c929f0a4b24812e1eb109262fc3372c8e9f2",
+            "url": "https://api.github.com/repos/symfony/finder/zipball/5e575faa95548d0586f6bedaeabec259714e44d1",
+            "reference": "5e575faa95548d0586f6bedaeabec259714e44d1",
             "shasum": "",
             "mirrors": [
                 {
@@ -1745,7 +1745,7 @@
         "require": {
             "php": "^7.1.3"
         },
-        "time": "2019-08-14T12:26:46+00:00",
+        "time": "2019-09-16T11:29:48+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1979,17 +1979,17 @@
     },
     {
         "name": "symfony/service-contracts",
-        "version": "v1.1.6",
-        "version_normalized": "1.1.6.0",
+        "version": "v1.1.7",
+        "version_normalized": "1.1.7.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/service-contracts.git",
-            "reference": "ea7263d6b6d5f798b56a45a5b8d686725f2719a3"
+            "reference": "ffcde9615dc5bb4825b9f6aed07716f1f57faae0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/service-contracts/zipball/ea7263d6b6d5f798b56a45a5b8d686725f2719a3",
-            "reference": "ea7263d6b6d5f798b56a45a5b8d686725f2719a3",
+            "url": "https://api.github.com/repos/symfony/service-contracts/zipball/ffcde9615dc5bb4825b9f6aed07716f1f57faae0",
+            "reference": "ffcde9615dc5bb4825b9f6aed07716f1f57faae0",
             "shasum": "",
             "mirrors": [
                 {
@@ -2005,7 +2005,7 @@
         "suggest": {
             "symfony/service-implementation": ""
         },
-        "time": "2019-08-20T14:44:19+00:00",
+        "time": "2019-09-17T11:12:18+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -2045,17 +2045,17 @@
     },
     {
         "name": "symfony/translation",
-        "version": "v4.3.4",
-        "version_normalized": "4.3.4.0",
+        "version": "v4.3.5",
+        "version_normalized": "4.3.5.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/translation.git",
-            "reference": "28498169dd334095fa981827992f3a24d50fed0f"
+            "reference": "fe6193b066c457c144333c06aaa869a2d42a167f"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/translation/zipball/28498169dd334095fa981827992f3a24d50fed0f",
-            "reference": "28498169dd334095fa981827992f3a24d50fed0f",
+            "url": "https://api.github.com/repos/symfony/translation/zipball/fe6193b066c457c144333c06aaa869a2d42a167f",
+            "reference": "fe6193b066c457c144333c06aaa869a2d42a167f",
             "shasum": "",
             "mirrors": [
                 {
@@ -2094,7 +2094,7 @@
             "symfony/config": "",
             "symfony/yaml": ""
         },
-        "time": "2019-08-26T08:55:16+00:00",
+        "time": "2019-09-27T14:37:39+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -2129,17 +2129,17 @@
     },
     {
         "name": "symfony/translation-contracts",
-        "version": "v1.1.6",
-        "version_normalized": "1.1.6.0",
+        "version": "v1.1.7",
+        "version_normalized": "1.1.7.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/translation-contracts.git",
-            "reference": "325b17c24f3ee23cbecfa63ba809c6d89b5fa04a"
+            "reference": "364518c132c95642e530d9b2d217acbc2ccac3e6"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/translation-contracts/zipball/325b17c24f3ee23cbecfa63ba809c6d89b5fa04a",
-            "reference": "325b17c24f3ee23cbecfa63ba809c6d89b5fa04a",
+            "url": "https://api.github.com/repos/symfony/translation-contracts/zipball/364518c132c95642e530d9b2d217acbc2ccac3e6",
+            "reference": "364518c132c95642e530d9b2d217acbc2ccac3e6",
             "shasum": "",
             "mirrors": [
                 {
@@ -2154,7 +2154,7 @@
         "suggest": {
             "symfony/translation-implementation": ""
         },
-        "time": "2019-08-02T12:15:04+00:00",
+        "time": "2019-09-17T11:12:18+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {

@@ -90,7 +90,7 @@ class Pusher extends Base
         $messageHandler->setHandler(function (Collection $message) {
             try {
                 // 仅处理好友来信
-                if ($message['fromType'] === 'Friend') {
+                if (in_array($message['fromType'], ['Friend', 'Self'])) {
                     // TODO 正则检查是否回复的1或降价提醒，如果是，通过发送者的username去redis查询，若有数据，将status改为1，过期时间改为永久
                     // TODO 新加的batch，常驻专门读取redis中status=1的数据，拿url取得最新价格与现有价格做对比，低于现有价格，就给username发微信
 
@@ -106,7 +106,7 @@ class Pusher extends Base
                         $priceText = CatDiscount::getPriceText($url);
 
                         // 原路返回
-                        Text::send($message['from']['UserName'], $priceText);
+                        Text::send($message['fromType'] === 'Self' ? 'filehelper' : $message['from']['UserName'], $priceText);
 
                         // TODO 保存数据到redis 以username作为键（若已存在则直接覆盖，且过期时间延长至2小时）
                         // TODO 数据内容为username，url，currPrice，时间戳，status（0或1，1代表需要降价提醒的任务）   2小时过期
