@@ -115,8 +115,8 @@ class Pusher extends Base
                     // TODO 处理自己的命令
                 }
 
-                // 处理撤回
-                if ($message['type'] === 'recall') {
+                // TODO 处理消息撤回，vbot封装的方法已失效
+                /*if ($message['type'] === 'recall') {
                     Text::send('filehelper', $message['content'] . ' : ' . $message['origin']['content']);
                     if ($message['origin']['type'] === 'image') {
                         Image::send('filehelper', $message['origin']);
@@ -127,7 +127,7 @@ class Pusher extends Base
                     } elseif ($message['origin']['type'] === 'voice') {
                         Voice::send('filehelper', $message['origin']);
                     }
-                }
+                }*/
             } catch (\Exception $e) {
                 Log::error('收到消息处理时发生错误: ' . $e->getMessage());
             }
