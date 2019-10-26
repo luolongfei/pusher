@@ -106,13 +106,12 @@ class Pusher extends Base
                         $priceText = CatDiscount::getPriceText($url);
 
                         // 原路返回
-                        Text::send($message['fromType'] === 'Self' ? 'filehelper' : $message['from']['UserName'], $priceText);
+                        Text::send($message['fromType'] === 'Self' && $message['ToUserName'] === 'filehelper' ?
+                            'filehelper' : $message['from']['UserName'], $priceText);
 
                         // TODO 保存数据到redis 以username作为键（若已存在则直接覆盖，且过期时间延长至2小时）
                         // TODO 数据内容为username，url，currPrice，时间戳，status（0或1，1代表需要降价提醒的任务）   2小时过期
                     }
-                } else if ($message['fromType'] === 'Self') {
-                    // TODO 处理自己的命令
                 }
 
                 // TODO 处理消息撤回，vbot封装的方法已失效
