@@ -28,9 +28,15 @@ use Hanson\Vbot\Message\Video;
 use Hanson\Vbot\Message\Voice;
 
 use Luolongfei\Lib\POE;
+use Luolongfei\Lib\Redis;
 
 class Pusher extends Base
 {
+    /**
+     * 版本号
+     */
+    const VERSION = '0.2.2 beta';
+
     /**
      * @var Pusher
      */

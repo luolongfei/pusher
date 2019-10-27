@@ -33,17 +33,17 @@ class MysqlPDO extends Base
     {
         $dsn = sprintf(
             'mysql:host=%s;port=%s;dbname=%s;charset=%s',
-            config('mysql.host'),
-            config('mysql.port'),
-            config('mysql.database'),
-            config('mysql.charset')
+            config('database.mysql.host'),
+            config('database.mysql.port'),
+            config('database.mysql.database'),
+            config('database.mysql.charset')
         );
 
         try {
             $this->db = new \PDO(
                 $dsn,
-                config('mysql.username'),
-                config('mysql.password')
+                config('database.mysql.username'),
+                config('database.mysql.password')
             );
         } catch (\PDOException $e) {
             LOG::error('连接Mysql出错：' . $e->getMessage());

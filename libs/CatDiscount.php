@@ -16,11 +16,6 @@ use Luolongfei\Lib\Mail;
 class CatDiscount
 {
     /**
-     * 版本号
-     */
-    const VERSION = '0.2 beta';
-
-    /**
      * 喵喵折基础URL
      */
     const APP_API_URL = 'https://www.henzanapp.com/api/v2/';

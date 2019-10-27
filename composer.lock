@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "72a5020a835c94949940a9b8bcae347a",
+    "content-hash": "86a0c0a7877419b1603a77d8ebb9c280",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -2204,7 +2204,8 @@
         "ext-curl": "*",
         "ext-openssl": "*",
         "ext-json": "*",
-        "ext-bcmath": "*"
+        "ext-bcmath": "*",
+        "ext-pdo": "*"
     },
     "platform-dev": []
 }
