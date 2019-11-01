@@ -68,6 +68,16 @@ class CatDiscount
     protected static $rtErrorMsg = '';
 
     /**
+     * @var string 标准URL，也可能为null，可外部访问
+     */
+    public static $standardUrl;
+
+    /**
+     * @var bool 整个处理流程是否完全完成
+     */
+    public static $success = false;
+
+    /**
      * @var CatDiscount
      */
     protected static $instance;
@@ -86,6 +96,9 @@ class CatDiscount
      */
     public static function getPriceText($origStr = '')
     {
+        // 标记过程是否全部完成
+        self::$success = false;
+
         $rt = self::getPrice($origStr);
         if ($rt === false || empty($rt['info'])) {
             return self::$rtErrorMsg ?: '[皱眉][皱眉]查询价格的某个流程出错了。小伙子别慌，我已经在排查问题了。';
@@ -186,6 +199,9 @@ class CatDiscount
             $trend
         );
 
+        // 标记本次处理已全部完成
+        self::$success = true;
+
         return $text;
     }
 
@@ -269,6 +285,7 @@ class CatDiscount
         }
 
         $rt = $response['data']['url_info'];
+        self::$standardUrl = $rt['url']; // 标准地址后期会被缓存
 
         return [
             'url' => $rt['url'],

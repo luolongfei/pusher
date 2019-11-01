@@ -112,7 +112,41 @@ class Pusher extends Base
                         $priceText = CatDiscount::getPriceText($url);
 
                         // 原路返回
-                        Text::send($message['fromType'] === 'Self' ? 'filehelper' : $message['from']['UserName'], $priceText);
+                        $username = $message['fromType'] === 'Self' ? 'filehelper' : $message['from']['UserName'];
+                        Text::send($username, $priceText);
+
+                        if (CatDiscount::$success) { // 正确返回了价格文言
+                            $realUrl = CatDiscount::$standardUrl;
+                            $token = md5(uniqid(microtime() . mt_rand(), true));
+
+                            // 缓存商品地址
+                            Redis::setex($token, config('urlTtl'), $realUrl);
+
+                            // 价格走势截图
+                            $imgFile = sprintf('%s.png', $token);
+                            $cmd = sprintf(
+                                'google-chrome-stable 
+                                --no-sandbox 
+                                --headless 
+                                --disable-gpu 
+                                --screenshot=%s 
+                                --window-size=%d,%d 
+                                --virtual-time-budget=%d 
+                                https://llf.design/price/%s',
+                                $imgFile,
+                                config('width'),
+                                config('height'),
+                                config('virtualTimeBudget'),
+                                $token // 所有参数由服务端控制，防止安全漏洞
+                            );
+                            $cmdRt = shell_exec($cmd);
+                            Log::info('截图执行回显：' . $cmdRt);
+
+                            // 发送价格变动图片
+                            if (file_exists($imgFile)) {
+                                Image::send($message['from']['UserName'], $imgFile);
+                            }
+                        }
 
                         // TODO 保存数据到redis 以username作为键（若已存在则直接覆盖，且过期时间延长至2小时）
                         // TODO 数据内容为username，url，currPrice，时间戳，status（0或1，1代表需要降价提醒的任务）   2小时过期
