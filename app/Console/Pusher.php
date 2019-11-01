@@ -125,14 +125,7 @@ class Pusher extends Base
                             // 价格走势截图
                             $imgFile = sprintf('%s.png', $token);
                             $cmd = sprintf(
-                                'google-chrome-stable 
-                                --no-sandbox 
-                                --headless 
-                                --disable-gpu 
-                                --screenshot=%s 
-                                --window-size=%d,%d 
-                                --virtual-time-budget=%d 
-                                https://llf.design/price/%s',
+                                'google-chrome-stable --no-sandbox --headless --disable-gpu --screenshot=%s --window-size=%d,%d --virtual-time-budget=%d https://llf.design/price/%s',
                                 $imgFile,
                                 config('width'),
                                 config('height'),
