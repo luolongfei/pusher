@@ -116,11 +116,11 @@ class Pusher extends Base
                         Text::send($username, $priceText);
 
                         if (CatDiscount::$success) { // 正确返回了价格文言
-                            /*$realUrl = CatDiscount::$standardUrl;
                             $token = md5(uniqid(microtime() . mt_rand(), true));
+                            $allParams = CatDiscount::$allParams;
 
                             // 缓存商品地址
-                            Redis::setex($token, config('urlTtl'), $realUrl);
+                            Redis::setex($token, config('urlTtl'), json_encode($allParams));
 
                             // 价格走势截图
                             $imgFile = sprintf('%s.png', $token);
@@ -138,7 +138,7 @@ class Pusher extends Base
                             // 发送价格变动图片
                             if (file_exists($imgFile)) {
                                 Image::send($username, $imgFile);
-                            }*/
+                            }
                         }
 
                         // TODO 保存数据到redis 以username作为键（若已存在则直接覆盖，且过期时间延长至2小时）

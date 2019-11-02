@@ -68,9 +68,9 @@ class CatDiscount
     protected static $rtErrorMsg = '';
 
     /**
-     * @var string 标准URL，也可能为null，可外部访问
+     * @var array 价格接口所有主要参数，缓存到redis后期会用到
      */
-    public static $standardUrl;
+    public static $allParams = [];
 
     /**
      * @var bool 整个处理流程是否完全完成
@@ -236,13 +236,14 @@ class CatDiscount
             return false;
         }
 
+        self::$allParams = $allParams = [ // 构造参数并更新属性值
+            'zan_goods_id' => $goodsDetail['zan_goods_id'], // 若调最近半年价格接口，京东此参数应对应jd_zan_goods_id
+            'price' => $goodsDetail['price'],
+            'url' => $goodsDetail['url']
+        ];
         $response = Curl::post(
             self::GET_ALL_HISTORICAL_PRICE_URL, // 直接获取最近一年价格，不再调用最近半年价格接口
-            [
-                'zan_goods_id' => $goodsDetail['zan_goods_id'], // 若调最近半年价格接口，京东此参数应对应jd_zan_goods_id
-                'price' => $goodsDetail['price'],
-                'url' => $goodsDetail['url']
-            ],
+            $allParams,
             self::MMZ_IOS_APP
         );
         $response = json_decode($response, true);
@@ -285,7 +286,6 @@ class CatDiscount
         }
 
         $rt = $response['data']['url_info'];
-        self::$standardUrl = $rt['url']; // 标准地址后期会被缓存
 
         return [
             'url' => $rt['url'],
