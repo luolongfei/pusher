@@ -139,6 +139,7 @@ class Pusher extends Base
                             // 发送价格变动图片
                             if (file_exists($imgFile)) {
                                 Image::send($username, $imgFile);
+                                Log::info(sprintf('截图文件%s删除%s', $imgFile, unlink($imgFile) ? '成功' : '失败'));
                             }
                         }
 
