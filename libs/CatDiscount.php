@@ -68,9 +68,9 @@ class CatDiscount
     protected static $rtErrorMsg = '';
 
     /**
-     * @var array 价格接口所有主要参数，缓存到redis后期会用到
+     * @var array 商品所有数据，缓存到redis后期会用到
      */
-    public static $allParams = [];
+    public static $allData = [];
 
     /**
      * @var bool 整个处理流程是否完全完成
@@ -96,7 +96,7 @@ class CatDiscount
      */
     public static function getPriceText($origStr = '')
     {
-        // 标记过程是否全部完成
+        // 还原完成标记
         self::$success = false;
 
         $rt = self::getPrice($origStr);
@@ -105,6 +105,7 @@ class CatDiscount
         }
 
         $allPrice = $rt['info'];
+        self::$allData['allPrice'] = $allPrice; // 缓存所有价格，用于画图
         $count = 0;
         $sumVal = 0;
         $hpr = 0;
@@ -236,17 +237,19 @@ class CatDiscount
             return false;
         }
 
-        self::$allParams = $allParams = [ // 构造参数并更新属性值
-            'zan_goods_id' => $goodsDetail['zan_goods_id'], // 若调最近半年价格接口，京东此参数应对应jd_zan_goods_id
-            'price' => $goodsDetail['price'],
-            'url' => $goodsDetail['url']
-        ];
         $response = Curl::post(
             self::GET_ALL_HISTORICAL_PRICE_URL, // 直接获取最近一年价格，不再调用最近半年价格接口
-            $allParams,
+            [
+                'zan_goods_id' => $goodsDetail['zan_goods_id'], // 若调最近半年价格接口，京东此参数应对应jd_zan_goods_id
+                'price' => $goodsDetail['price'],
+                'url' => $goodsDetail['url']
+            ],
             self::MMZ_IOS_APP
         );
         $response = json_decode($response, true);
+
+        // 记录商品标题
+        self::$allData['title'] = $goodsDetail['title'];
 
         if (!$response || $response['RC'] !== 1) {
             LOG::error('获取商品历史价格时出错', $response);

@@ -117,20 +117,16 @@ class Pusher extends Base
 
                         if (CatDiscount::$success) { // 正确返回了价格文言
                             $token = md5(uniqid(microtime() . mt_rand(), true));
-                            $allParams = CatDiscount::$allParams;
+                            $allData = CatDiscount::$allData;
 
-                            // 缓存商品地址
-                            Redis::setex($token, config('urlTtl'), json_encode($allParams));
+                            // 缓存商品价格信息
+                            Redis::setex($token, config('urlTtl'), json_encode($allData));
 
                             // 价格走势截图
                             $imgFile = sprintf('%s.png', $token);
                             $cmd = sprintf(
-                                'google-chrome-stable --no-sandbox --headless --disable-gpu --screenshot=%s --window-size=%d,%d --virtual-time-budget=%d https://llf.design/price/%s',
-                                $imgFile,
-                                config('width'),
-                                config('height'),
-                                config('virtualTimeBudget'),
-                                $token // 所有参数由服务端控制，防止安全漏洞
+                                'node screenshot.js --url=%s --save_path=%s --name=%s',
+                                'https://llf.design/price/%s',
                             );
                             $cmdRt = shell_exec($cmd);
                             Log::info('截图执行回显：' . $cmdRt);
