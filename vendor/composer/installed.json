@@ -227,17 +227,17 @@
     },
     {
         "name": "guzzlehttp/guzzle",
-        "version": "6.3.3",
-        "version_normalized": "6.3.3.0",
+        "version": "6.4.1",
+        "version_normalized": "6.4.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/guzzle/guzzle.git",
-            "reference": "407b0cb880ace85c9b63c5f9551db498cb2d50ba"
+            "reference": "0895c932405407fd3a7368b6910c09a24d26db11"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/guzzle/guzzle/zipball/407b0cb880ace85c9b63c5f9551db498cb2d50ba",
-            "reference": "407b0cb880ace85c9b63c5f9551db498cb2d50ba",
+            "url": "https://api.github.com/repos/guzzle/guzzle/zipball/0895c932405407fd3a7368b6910c09a24d26db11",
+            "reference": "0895c932405407fd3a7368b6910c09a24d26db11",
             "shasum": "",
             "mirrors": [
                 {
@@ -247,19 +247,20 @@
             ]
         },
         "require": {
+            "ext-json": "*",
             "guzzlehttp/promises": "^1.0",
-            "guzzlehttp/psr7": "^1.4",
+            "guzzlehttp/psr7": "^1.6.1",
             "php": ">=5.5"
         },
         "require-dev": {
             "ext-curl": "*",
             "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.4 || ^7.0",
-            "psr/log": "^1.0"
+            "psr/log": "^1.1"
         },
         "suggest": {
             "psr/log": "Required for using the Log middleware"
         },
-        "time": "2018-04-22T15:46:56+00:00",
+        "time": "2019-10-23T15:58:00+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -268,12 +269,12 @@
         },
         "installation-source": "dist",
         "autoload": {
-            "files": [
-                "src/functions_include.php"
-            ],
             "psr-4": {
                 "GuzzleHttp\\": "src/"
-            }
+            },
+            "files": [
+                "src/functions_include.php"
+            ]
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
@@ -1250,17 +1251,17 @@
     },
     {
         "name": "phpoption/phpoption",
-        "version": "1.5.0",
-        "version_normalized": "1.5.0.0",
+        "version": "1.5.2",
+        "version_normalized": "1.5.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/schmittjoh/php-option.git",
-            "reference": "94e644f7d2051a5f0fcf77d81605f152eecff0ed"
+            "reference": "2ba2586380f8d2b44ad1b9feb61c371020b27793"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/schmittjoh/php-option/zipball/94e644f7d2051a5f0fcf77d81605f152eecff0ed",
-            "reference": "94e644f7d2051a5f0fcf77d81605f152eecff0ed",
+            "url": "https://api.github.com/repos/schmittjoh/php-option/zipball/2ba2586380f8d2b44ad1b9feb61c371020b27793",
+            "reference": "2ba2586380f8d2b44ad1b9feb61c371020b27793",
             "shasum": "",
             "mirrors": [
                 {
@@ -1273,13 +1274,13 @@
             "php": ">=5.3.0"
         },
         "require-dev": {
-            "phpunit/phpunit": "4.7.*"
+            "phpunit/phpunit": "^4.7|^5.0"
         },
-        "time": "2015-07-25T16:39:46+00:00",
+        "time": "2019-11-06T22:27:00+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.3-dev"
+                "dev-master": "1.5-dev"
             }
         },
         "installation-source": "dist",
@@ -1290,7 +1291,7 @@
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
-            "Apache2"
+            "Apache-2.0"
         ],
         "authors": [
             {
@@ -1481,17 +1482,17 @@
     },
     {
         "name": "psr/log",
-        "version": "1.1.0",
-        "version_normalized": "1.1.0.0",
+        "version": "1.1.2",
+        "version_normalized": "1.1.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/php-fig/log.git",
-            "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd"
+            "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-fig/log/zipball/6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
-            "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
+            "url": "https://api.github.com/repos/php-fig/log/zipball/446d54b4cb6bf489fc9d75f55843658e6f25d801",
+            "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801",
             "shasum": "",
             "mirrors": [
                 {
@@ -1503,11 +1504,11 @@
         "require": {
             "php": ">=5.3.0"
         },
-        "time": "2018-11-20T15:27:04+00:00",
+        "time": "2019-11-01T11:05:21+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.0.x-dev"
+                "dev-master": "1.1.x-dev"
             }
         },
         "installation-source": "dist",
@@ -1640,17 +1641,17 @@
     },
     {
         "name": "symfony/console",
-        "version": "v4.3.5",
-        "version_normalized": "4.3.5.0",
+        "version": "v4.3.6",
+        "version_normalized": "4.3.6.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/console.git",
-            "reference": "929ddf360d401b958f611d44e726094ab46a7369"
+            "reference": "136c4bd62ea871d00843d1bc0316de4c4a84bb78"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/console/zipball/929ddf360d401b958f611d44e726094ab46a7369",
-            "reference": "929ddf360d401b958f611d44e726094ab46a7369",
+            "url": "https://api.github.com/repos/symfony/console/zipball/136c4bd62ea871d00843d1bc0316de4c4a84bb78",
+            "reference": "136c4bd62ea871d00843d1bc0316de4c4a84bb78",
             "shasum": "",
             "mirrors": [
                 {
@@ -1688,7 +1689,7 @@
             "symfony/lock": "",
             "symfony/process": ""
         },
-        "time": "2019-10-07T12:36:49+00:00",
+        "time": "2019-10-30T12:58:49+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1723,17 +1724,17 @@
     },
     {
         "name": "symfony/finder",
-        "version": "v4.3.5",
-        "version_normalized": "4.3.5.0",
+        "version": "v4.3.6",
+        "version_normalized": "4.3.6.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/finder.git",
-            "reference": "5e575faa95548d0586f6bedaeabec259714e44d1"
+            "reference": "72a068f77e317ae77c0a0495236ad292cfb5ce6f"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/finder/zipball/5e575faa95548d0586f6bedaeabec259714e44d1",
-            "reference": "5e575faa95548d0586f6bedaeabec259714e44d1",
+            "url": "https://api.github.com/repos/symfony/finder/zipball/72a068f77e317ae77c0a0495236ad292cfb5ce6f",
+            "reference": "72a068f77e317ae77c0a0495236ad292cfb5ce6f",
             "shasum": "",
             "mirrors": [
                 {
@@ -1745,7 +1746,7 @@
         "require": {
             "php": "^7.1.3"
         },
-        "time": "2019-09-16T11:29:48+00:00",
+        "time": "2019-10-30T12:53:54+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1979,17 +1980,17 @@
     },
     {
         "name": "symfony/service-contracts",
-        "version": "v1.1.7",
-        "version_normalized": "1.1.7.0",
+        "version": "v1.1.8",
+        "version_normalized": "1.1.8.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/service-contracts.git",
-            "reference": "ffcde9615dc5bb4825b9f6aed07716f1f57faae0"
+            "reference": "ffc7f5692092df31515df2a5ecf3b7302b3ddacf"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/service-contracts/zipball/ffcde9615dc5bb4825b9f6aed07716f1f57faae0",
-            "reference": "ffcde9615dc5bb4825b9f6aed07716f1f57faae0",
+            "url": "https://api.github.com/repos/symfony/service-contracts/zipball/ffc7f5692092df31515df2a5ecf3b7302b3ddacf",
+            "reference": "ffc7f5692092df31515df2a5ecf3b7302b3ddacf",
             "shasum": "",
             "mirrors": [
                 {
@@ -2005,7 +2006,7 @@
         "suggest": {
             "symfony/service-implementation": ""
         },
-        "time": "2019-09-17T11:12:18+00:00",
+        "time": "2019-10-14T12:27:06+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -2045,17 +2046,17 @@
     },
     {
         "name": "symfony/translation",
-        "version": "v4.3.5",
-        "version_normalized": "4.3.5.0",
+        "version": "v4.3.6",
+        "version_normalized": "4.3.6.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/translation.git",
-            "reference": "fe6193b066c457c144333c06aaa869a2d42a167f"
+            "reference": "a3aa590ce944afb3434d7a55f81b00927144d5ec"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/translation/zipball/fe6193b066c457c144333c06aaa869a2d42a167f",
-            "reference": "fe6193b066c457c144333c06aaa869a2d42a167f",
+            "url": "https://api.github.com/repos/symfony/translation/zipball/a3aa590ce944afb3434d7a55f81b00927144d5ec",
+            "reference": "a3aa590ce944afb3434d7a55f81b00927144d5ec",
             "shasum": "",
             "mirrors": [
                 {
@@ -2094,7 +2095,7 @@
             "symfony/config": "",
             "symfony/yaml": ""
         },
-        "time": "2019-09-27T14:37:39+00:00",
+        "time": "2019-10-30T12:53:54+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
