@@ -123,13 +123,17 @@ class Pusher extends Base
                             Redis::setex($token, config('urlTtl'), json_encode($allData));
 
                             // 价格走势截图
-                            $imgFile = sprintf('%s.png', $token);
+                            $imgName = sprintf('%s.png', $token);
+                            $imgPath = RESOURCES_PATH . '/screenshot/';
+                            $imgFile = $imgPath . $imgName;
                             $cmd = sprintf(
-                                'node screenshot.js --url=%s --save_path=%s --name=%s',
-                                'https://llf.design/price/%s',
+                                'node screenshot.js --url=https://llf.design/price/%s --save_path=%s --name=%s',
+                                $token,
+                                $imgPath,
+                                $imgName
                             );
                             $cmdRt = shell_exec($cmd);
-                            Log::info('截图执行回显：' . $cmdRt);
+                            Log::info('ChromeHeadless截图执行回显：' . $cmdRt);
 
                             // 发送价格变动图片
                             if (file_exists($imgFile)) {
