@@ -19,6 +19,7 @@ define('ROOT_PATH', realpath(__DIR__));
 define('VENDOR_PATH', realpath(ROOT_PATH . '/vendor'));
 define('APP_PATH', realpath(ROOT_PATH . '/app'));
 define('RESOURCES_PATH', realpath(ROOT_PATH . '/resources'));
+define('NODEJS_PATH', realpath(APP_PATH . '/Nodejs'));
 
 date_default_timezone_set('Asia/Shanghai');
 
