@@ -127,7 +127,7 @@ class Pusher extends Base
                             $imgPath = RESOURCES_PATH . '/screenshot/';
                             $imgFile = $imgPath . $imgName;
                             $cmd = sprintf(
-                                'node ./%s/screenshot.js --url=https://llf.design/price/%s --save_path=%s --name=%s',
+                                'node %s/screenshot.js --url=https://llf.design/price/%s --save_path=%s --name=%s',
                                 NODEJS_PATH,
                                 $token,
                                 $imgPath,
