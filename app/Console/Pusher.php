@@ -106,8 +106,9 @@ class Pusher extends Base
                 ]
             ];
 
-            try {
-                foreach ($webs as $w) {
+
+            foreach ($webs as $w) {
+                try {
                     $response = Curl::get($w['webUrl']);
                     if (preg_match_all($w['regex'], $response, $matches, PREG_SET_ORDER)) { // 匹配每集地址
                         foreach ($matches as $item) {
@@ -135,9 +136,9 @@ class Pusher extends Base
                             sleep(1);
                         }
                     }
+                } catch (\Exception $e) {
+                    Log::error(sprintf('采集视频出错：%s', $e->getMessage()));
                 }
-            } catch (\Exception $e) {
-                Log::error(sprintf('采集视频出错：%s', $e->getMessage()));
             }
         });
 
