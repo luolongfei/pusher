@@ -93,16 +93,22 @@ if (!function_exists('is_locked')) {
      * 检查任务是否已被锁定
      *
      * @param string $taskName
+     * @param bool $always 是否被永久锁定
      *
      * @return bool
      * @throws Exception
      */
-    function is_locked($taskName = '')
+    function is_locked($taskName = '', $always = false)
     {
         try {
-            $lock = APP_PATH . '/num_limit/' . date('Y-m-d') . '/' . $taskName . '.lock';
+            $lock = sprintf(
+                '%s/num_limit/%s/%s.lock',
+                APP_PATH,
+                $always ? 'always' : date('Y-m-d'),
+                $taskName
+            );
 
-            if (file_exists($lock)) return true;
+            return file_exists($lock);
         } catch (\Exception $e) {
             system_log(sprintf('检查任务%s是否锁定时出错，错误原因：%s', $taskName, $e->getMessage()));
         }
@@ -118,16 +124,21 @@ if (!function_exists('lock_task')) {
      * 防止重复执行
      *
      * @param string $taskName
+     * @param bool $always 是否永久锁定
      *
      * @return bool
      */
-    function lock_task($taskName = '')
+    function lock_task($taskName = '', $always = false)
     {
         try {
-            $path = APP_PATH . '/num_limit/' . date('Y-m-d') . '/';
-            $file = $taskName . '.lock';
-            $lock = $path . $file;
+            $lock = sprintf(
+                '%s/num_limit/%s/%s.lock',
+                APP_PATH,
+                $always ? 'always' : date('Y-m-d'),
+                $taskName
+            );
 
+            $path = dirname($lock);
             if (!is_dir($path)) {
                 mkdir($path, 0777, true);
                 chmod($path, 0777);
@@ -151,7 +162,7 @@ if (!function_exists('lock_task')) {
 
             fclose($handle);
 
-            Log::info(sprintf('%s已被锁定，此任务今天内已不会再执行，请知悉', $taskName));
+            Log::info(sprintf('%s已被锁定，此任务%s已不会再执行，请知悉', $taskName, $always ? '' : '今天内'));
         } catch (\Exception $e) {
             system_log(sprintf('创建锁定任务文件%s时出错，错误原因：%s', $lock, $e->getMessage()));
 

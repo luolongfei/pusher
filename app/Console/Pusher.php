@@ -89,8 +89,57 @@ class Pusher extends Base
         $messageHandler = $weChat->messageHandler;
 
         // 一直触发
-        /*$messageHandler->setCustomHandler(function () {
-        });*/
+        $messageHandler->setCustomHandler(function () {
+            $friends = vbot('friends');
+            $friend = $friends->getUsernameByRemarkName(env('girlfriendRemarkName'), false);
+
+            $webs = [
+                [ // 秒播资源
+                    'webUrl' => 'http://www.mbkkk.com/?m=vod-detail-id-16894.html',
+                    'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
+                    'prefix' => ''
+                ],
+                [ // 卧龙资源
+                    'webUrl' => 'https://wolongzy.net/detail/295032.html',
+                    'regex' => '/>第(?P<num>\d+)集\s+(?P<url>https?:\/\/.*?\.m3u8)</i',
+                    'prefix' => 'https://jx.inpower.cc/?url='
+                ]
+            ];
+
+            try {
+                foreach ($webs as $w) {
+                    $response = Curl::get($w['webUrl']);
+                    if (preg_match_all($w['regex'], $response, $matches, PREG_SET_ORDER)) { // 匹配每集地址
+                        foreach ($matches as $item) {
+                            $num = intval($item['num']);
+                            $taskName = sprintf('qyn_%d', $num);
+                            if (is_locked($taskName, true) || $num <= 25) { // 已看
+                                continue;
+                            }
+
+                            // 发送提醒
+                            $url = str_ireplace('http://', 'https://', $w['prefix'] . $item['url']);
+                            $content = sprintf(
+                                "莎孃孃，《庆余年》更新啦。由于微信可能限制访问，如若遇到，就复制完整地址到浏览器打开观看。\n\n本次更新到第%d集，完整地址为：\n%s\n\n切莫相信视频中任何广告内容。\n\nby 罗先生",
+                                $num,
+                                $url
+                            );
+
+                            $rt = Text::send($friend, $content);
+                            if ($rt === false) {
+                                Log::error('消息发送失败');
+                                Mail::send('主人，消息推送失败', "消息内容：\n" . (string)$content);
+                            }
+
+                            lock_task($taskName, true);
+                            sleep(1);
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error(sprintf('采集视频出错：%s', $e->getMessage()));
+            }
+        });
 
         // 收到消息时触发
         $messageHandler->setHandler(function (Collection $message) {
