@@ -106,7 +106,6 @@ class Pusher extends Base
                 ]
             ];
 
-
             foreach ($webs as $w) {
                 try {
                     $response = Curl::get($w['webUrl']);
@@ -121,7 +120,7 @@ class Pusher extends Base
                             // 发送提醒
                             $url = str_ireplace('http://', 'https://', $w['prefix'] . $item['url']);
                             $content = sprintf(
-                                "[害羞]莎孃孃，《庆余年》又更新啦。\n由于微信可能限制访问，如若遇到，就复制完整地址到浏览器打开观看。\n\n本次更新到第%d集，视频完整地址为：\n%s\n\n切莫相信视频中任何广告内容。此消息为程序自动推送，你可以发消息提醒对方一起看。\n\nby 罗先生",
+                                "[害羞]莎孃孃，《庆余年》又更新了，本次更新到第%d集，视频完整地址为：\n%s\n\n由于微信可能限制访问，如若遇到，就复制完整地址到浏览器打开观看。切莫相信视频中任何广告内容。\n\n此消息为程序自动推送，你可以发信提醒对方一起看。[爱心]\n\nby 罗先生",
                                 $num,
                                 $url
                             );
