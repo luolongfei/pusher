@@ -59,6 +59,11 @@ class Pusher extends Base
      */
     public $client;
 
+    /**
+     * @var int 随机延迟至此时间
+     */
+    public $delayTime = 0;
+
     public function __construct($session = null)
     {
         $this->config = config('weChat');
@@ -120,23 +125,36 @@ class Pusher extends Base
                 [ // 秒播资源
                     'webUrl' => 'http://www.mbkkk.com/?m=vod-detail-id-16894.html',
                     'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
-                    'prefix' => ''
+                    'prefix' => '',
+                    'randomDelay' => true
                 ],
                 [ // 最大资源
                     'webUrl' => 'http://www.zuidazy2.net/?m=vod-detail-id-73293.html',
                     'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?share.*?)</i',
-                    'prefix' => ''
+                    'prefix' => '',
+                    'randomDelay' => false
                 ],
                 [ // 卧龙资源
                     'webUrl' => 'https://wolongzy.net/detail/295032.html',
                     'regex' => '/>第(?P<num>\d+)集\s+(?P<url>https?:\/\/.*?\.m3u8)</i',
-                    'prefix' => 'https://jx.inpower.cc/?url='
+                    'prefix' => 'https://jx.inpower.cc/?url=',
+                    'randomDelay' => false
                 ]
             ];
 
             foreach ($webs as $w) {
                 try {
                     $webUrl = $w['webUrl'];
+                    if ($w['randomDelay']) { // 随机10min内延迟，模拟真人
+                        if (time() < $this->delayTime) {
+                            Log::notice(sprintf('时候未到，跳过请求：%s', $webUrl));
+                            continue;
+                        } else {
+                            $this->delayTime = time() + mt_rand(1, 10) * 60;
+                            Log::notice(sprintf('触发随机延迟，将在%s后重新发起请求：%s', date('Y-m-d H:i:s', $this->delayTime), $webUrl));
+                        }
+                    }
+
                     $request = $this->client->request('GET', $webUrl, ['proxy' => env('TMP_PROXY')]);
                     $response = (string)$request->getBody();
                     if (preg_match_all($w['regex'], $response, $matches, PREG_SET_ORDER)) { // 匹配每集地址
