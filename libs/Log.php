@@ -18,7 +18,12 @@ class Log
     /**
      * @var Logger
      */
-    protected static $instance;
+    protected static $loggerInstance;
+
+    /**
+     * @var string 日期目录
+     */
+    public static $date;
 
     /**
      * 由于php不能在类外使用已实例化的对象来访问静态属性，但可以在类外访问类里的静态方法，故定义此方法实现类外访问静态属性
@@ -30,9 +35,17 @@ class Log
      */
     public static function logger()
     {
-        if (!self::$instance instanceof Logger) {
+        // 日志按每天日期路径归档
+        $date = date('Y-m-d');
+        if (self::$date !== $date) {
+            self::$date = $date;
+            self::$loggerInstance = null;
+        }
+
+        // 实例化
+        if (!self::$loggerInstance instanceof Logger) {
             $handler = new StreamHandler(
-                config('stdout') ? 'php://stdout' : ROOT_PATH . '/logs/' . date('Y-m-d') . '/push.log',
+                config('stdout') ? 'php://stdout' : sprintf('%s/logs/%s/push.log', ROOT_PATH, $date),
                 config('debug') ? Logger::DEBUG : Logger::INFO
             );
             if (config('stdout')) {
@@ -42,10 +55,10 @@ class Log
             $logger = new Logger('pusher');
             $logger->pushHandler($handler);
 
-            self::$instance = $logger;
+            self::$loggerInstance = $logger;
         }
 
-        return self::$instance;
+        return self::$loggerInstance;
     }
 
     /**
