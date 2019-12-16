@@ -9,6 +9,8 @@
 
 namespace Luolongfei\App\Console;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Luolongfei\Lib\Base;
 use Luolongfei\Lib\Log;
 use Luolongfei\Lib\Curl;
@@ -52,6 +54,11 @@ class Pusher extends Base
      */
     private $config;
 
+    /**
+     * @var Client 独立的curl客户端，便于走代理
+     */
+    public $client;
+
     public function __construct($session = null)
     {
         $this->config = config('weChat');
@@ -59,6 +66,22 @@ class Pusher extends Base
         if ($session) {
             $this->config['session'] = $session;
         }
+
+        // 实例化独立的curl客户端
+        $this->client = new Client([
+            'headers' => [
+                'Accept' => '*/*',
+                'Accept-Encoding' => 'gzip;q=1.0, compress;q=0.5',
+                'Accept-Language' => 'zh-Hans-CN;q=1.0, zh-Hant-CN;q=0.9, ja-CN;q=0.8',
+                'Connection' => 'keep-alive',
+                'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8',
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36',
+                'Referer' => '',
+            ],
+            'timeout' => 30.0,
+            'http_errors' => false,
+            'cookies' => true,
+        ]);
     }
 
     /**
@@ -99,6 +122,11 @@ class Pusher extends Base
                     'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
                     'prefix' => ''
                 ],
+                [ // 最大资源
+                    'webUrl' => 'http://www.zuidazy2.net/?m=vod-detail-id-73293.html',
+                    'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?share.*?)</i',
+                    'prefix' => ''
+                ],
                 [ // 卧龙资源
                     'webUrl' => 'https://wolongzy.net/detail/295032.html',
                     'regex' => '/>第(?P<num>\d+)集\s+(?P<url>https?:\/\/.*?\.m3u8)</i',
@@ -108,8 +136,11 @@ class Pusher extends Base
 
             foreach ($webs as $w) {
                 try {
-                    $response = Curl::get($w['webUrl']);
+                    $webUrl = $w['webUrl'];
+                    $request = $this->client->request('GET', $webUrl, ['proxy' => env('TMP_PROXY')]);
+                    $response = (string)$request->getBody();
                     if (preg_match_all($w['regex'], $response, $matches, PREG_SET_ORDER)) { // 匹配每集地址
+                        Log::notice(sprintf('成功从此地址匹配到剧集：%s', $webUrl));
                         foreach ($matches as $item) {
                             $num = intval($item['num']);
                             $taskName = sprintf('qyn_%d', $num);
@@ -136,7 +167,13 @@ class Pusher extends Base
                         }
                     }
                 } catch (\Exception $e) {
-                    Log::error(sprintf('采集视频出错：%s', $e->getMessage()));
+                    $errorMsg = sprintf('采集视频出错：%s', $e->getMessage());
+                    Log::error($errorMsg);
+
+                    if (!is_locked('collectionError')) { // 每天最多通知一次
+                        Mail::send('主人，采集视频地址出了点状况', $errorMsg);
+                        lock_task('collectionError');
+                    }
                 }
             }
         });
