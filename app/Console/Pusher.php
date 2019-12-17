@@ -118,6 +118,14 @@ class Pusher extends Base
 
         // 一直触发
         $messageHandler->setCustomHandler(function () {
+            // 随机延迟，模拟真人
+            if (time() < $this->delayTime) {
+                return;
+            } else {
+                $this->delayTime = time() + mt_rand(5, 10) * 60;
+                Log::notice(sprintf('触发随机延迟，今次请求后，将在%s后再次发起请求', date('Y-m-d H:i:s', $this->delayTime)));
+            }
+
             $friends = vbot('friends');
             $friend = $friends->getUsernameByRemarkName(env('GIRLFRIEND_REMARK_NAME'), false);
 
@@ -137,56 +145,49 @@ class Pusher extends Base
                 [
                     'webUrl' => 'https://wolongzy.net/detail/295032.html',
                     'regex' => '/<a\stitle="第(?P<num>\d+)集"\shref="(?P<url>.*?)"\starget="_blank"/i',
-                    'prefix' => '',
-                    'randomDelay' => true,
+                    'urlFix' => true,
                     'code' => 'wlzy',
                     'name' => '卧龙资源'
                 ],
                 [
                     'webUrl' => 'http://www.mahuazy.com/?m=vod-detail-id-21136.html',
                     'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
-                    'prefix' => '',
-                    'randomDelay' => true,
+                    'urlFix' => true,
                     'code' => 'mhzy',
                     'name' => '麻花资源'
                 ],
                 [
                     'webUrl' => 'http://chaojizy.com/index.php/vod/detail/id/25953.html',
                     'regex' => '/<span>第(?P<num>\d+)集\$<\/span>(?P<url>https?:\/\/.*?\/share\/.*?)[\s<]/i',
-                    'prefix' => '',
-                    'randomDelay' => true,
+                    'urlFix' => true,
                     'code' => 'cjzy',
                     'name' => '超级资源'
                 ],
                 [
                     'webUrl' => 'http://www.123ku.com/?m=vod-detail-id-32464.html',
                     'regex' => '/target="_black">第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
-                    'prefix' => '',
-                    'randomDelay' => true,
+                    'urlFix' => true,
                     'code' => '123zy',
                     'name' => '123资源'
                 ],
                 [
                     'webUrl' => 'https://bajiezy.cc/?m=vod-detail-id-130608.html',
                     'regex' => '/<span>第(?P<num>\d+)集\$<\/span>(?P<url>https?:\/\/.*?\/share\/.*?)</i',
-                    'prefix' => '',
-                    'randomDelay' => true,
+                    'urlFix' => true,
                     'code' => 'bjzy',
                     'name' => '八戒资源'
                 ],
                 [
                     'webUrl' => 'http://gaoqingzy.com/?m=vod-detail-id-36990.html',
                     'regex' => '/<li>(?P<num>\d+)\$(?P<url>https?:\/\/.*?\/share\/.*?)<\/li>/i',
-                    'prefix' => '',
-                    'randomDelay' => true,
+                    'urlFix' => true,
                     'code' => 'gqzy',
                     'name' => '高清资源'
                 ],
                 [
                     'webUrl' => 'http://kankanzy.com/?m=vod-detail-id-33593.html',
                     'regex' => '/\/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
-                    'prefix' => '',
-                    'randomDelay' => true,
+                    'urlFix' => true,
                     'code' => 'kkzy',
                     'name' => '看看资源'
                 ]
@@ -195,16 +196,6 @@ class Pusher extends Base
             foreach ($resources as $r) {
                 try {
                     $webUrl = $r['webUrl'];
-                    if ($r['randomDelay']) { // 随机延迟，模拟真人
-                        if (time() < $this->delayTime) {
-                            Log::notice(sprintf('时候未到，跳过请求：%s', $webUrl));
-                            continue;
-                        } else {
-                            $this->delayTime = time() + mt_rand(5, 10) * 60;
-                            Log::notice(sprintf('触发随机延迟，将在%s后重新发起请求：%s', date('Y-m-d H:i:s', $this->delayTime), $webUrl));
-                        }
-                    }
-
                     $request = $this->client->request('GET', $webUrl, ['proxy' => env('TMP_PROXY')]);
                     $response = (string)$request->getBody();
                     if (preg_match_all($r['regex'], $response, $matches, PREG_SET_ORDER)) { // 匹配每集地址
@@ -219,7 +210,7 @@ class Pusher extends Base
                             }
 
                             // 缓存地址到redis
-                            $url = str_ireplace('http://', 'https://', $r['prefix'] . $item['url']);
+                            $url = str_ireplace('http://', 'https://', $item['url']);
                             $token = sprintf('%s_%d', md5(uniqid(microtime() . mt_rand(), true)), $num);
                             Redis::setex($token, config('qynTtl'), $url);
 
@@ -233,7 +224,7 @@ class Pusher extends Base
                             continue;
                         }
                         $content = sprintf(
-                            "莎孃孃，《庆余年》又更新了，本次共更新%d集，如下\n\n%s\n\n由于微信可能限制访问，点击地址跳转会自动复制网址，然后到浏览器粘贴观看。切莫相信视频中任何广告。\n\n片源 「%s」",
+                            "[愉快][愉快]莎孃孃，《庆余年》又更新啦，本次共更新%d集，如下所述\n\n%s\n\n由于微信可能限制访问，点击地址跳转会自动复制网址，然后到浏览器粘贴观看。切莫相信视频中任何广告。\n\n片源 「%s」",
                             count($allParts),
                             implode("\n", $allParts),
                             $r['name']
