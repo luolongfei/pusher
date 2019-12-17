@@ -195,7 +195,7 @@ class Pusher extends Base
                         }
                     }
                 } catch (\Exception $e) {
-                    $errorMsg = sprintf("采集视频出错：%s\n目标地址：%s\n片源「%s」", $e->getMessage(), $r['webUrl'], $r['name']);
+                    $errorMsg = sprintf("采集视频出错：%s<br>目标地址：%s<br>片源「%s」", $e->getMessage(), $r['webUrl'], $r['name']);
                     Log::error($errorMsg);
 
                     $collectionTaskName = sprintf('collectionError_%s', $r['code']);
