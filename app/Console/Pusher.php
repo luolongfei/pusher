@@ -136,11 +136,59 @@ class Pusher extends Base
                 ],*/
                 [
                     'webUrl' => 'https://wolongzy.net/detail/295032.html',
-                    'regex' => '/>第(?P<num>\d+)集\s+(?P<url>https?:\/\/.*?\.m3u8)</i',
-                    'prefix' => 'https://jx.inpower.cc/?url=',
+                    'regex' => '/<a\stitle="第(?P<num>\d+)集"\shref="(?P<url>.*?)"\starget="_blank"/i',
+                    'prefix' => '',
                     'randomDelay' => true,
                     'code' => 'wlzy',
                     'name' => '卧龙资源'
+                ],
+                [
+                    'webUrl' => 'http://www.mahuazy.com/?m=vod-detail-id-21136.html',
+                    'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
+                    'prefix' => '',
+                    'randomDelay' => true,
+                    'code' => 'mhzy',
+                    'name' => '麻花资源'
+                ],
+                [
+                    'webUrl' => 'http://chaojizy.com/index.php/vod/detail/id/25953.html',
+                    'regex' => '/<span>第(?P<num>\d+)集\$<\/span>(?P<url>https?:\/\/.*?\/share\/.*?)[\s<]/i',
+                    'prefix' => '',
+                    'randomDelay' => true,
+                    'code' => 'cjzy',
+                    'name' => '超级资源'
+                ],
+                [
+                    'webUrl' => 'http://www.123ku.com/?m=vod-detail-id-32464.html',
+                    'regex' => '/target="_black">第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
+                    'prefix' => '',
+                    'randomDelay' => true,
+                    'code' => '123zy',
+                    'name' => '123资源'
+                ],
+                [
+                    'webUrl' => 'https://bajiezy.cc/?m=vod-detail-id-130608.html',
+                    'regex' => '/<span>第(?P<num>\d+)集\$<\/span>(?P<url>https?:\/\/.*?\/share\/.*?)</i',
+                    'prefix' => '',
+                    'randomDelay' => true,
+                    'code' => 'bjzy',
+                    'name' => '八戒资源'
+                ],
+                [
+                    'webUrl' => 'http://gaoqingzy.com/?m=vod-detail-id-36990.html',
+                    'regex' => '/<li>(?P<num>\d+)\$(?P<url>https?:\/\/.*?\/share\/.*?)<\/li>/i',
+                    'prefix' => '',
+                    'randomDelay' => true,
+                    'code' => 'gqzy',
+                    'name' => '高清资源'
+                ],
+                [
+                    'webUrl' => 'http://kankanzy.com/?m=vod-detail-id-33593.html',
+                    'regex' => '/\/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
+                    'prefix' => '',
+                    'randomDelay' => true,
+                    'code' => 'kkzy',
+                    'name' => '看看资源'
                 ]
             ];
 
@@ -185,7 +233,7 @@ class Pusher extends Base
                             continue;
                         }
                         $content = sprintf(
-                            "莎孃孃，《庆余年》又更新了，本次共更新%d集，如下\n\n%s\n\n由于微信可能限制访问，点击地址跳转会自动复制网址，然后到浏览器粘贴观看。切莫相信视频中任何广告。[爱心]\n\n片源 「%s」",
+                            "莎孃孃，《庆余年》又更新了，本次共更新%d集，如下\n\n%s\n\n由于微信可能限制访问，点击地址跳转会自动复制网址，然后到浏览器粘贴观看。切莫相信视频中任何广告。\n\n片源 「%s」",
                             count($allParts),
                             implode("\n", $allParts),
                             $r['name']
