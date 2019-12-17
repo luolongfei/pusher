@@ -119,10 +119,10 @@ class Pusher extends Base
         // 一直触发
         $messageHandler->setCustomHandler(function () {
             $friends = vbot('friends');
-            $friend = $friends->getUsernameByRemarkName(env('girlfriendRemarkName'), false);
+            $friend = $friends->getUsernameByRemarkName(env('GIRLFRIEND_REMARK_NAME'), false);
 
-            $webs = [
-                [ // 秒播资源
+            $resources = [
+                /*[ // 秒播资源
                     'webUrl' => 'http://www.mbkkk.com/?m=vod-detail-id-16894.html',
                     'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
                     'prefix' => '',
@@ -133,64 +133,75 @@ class Pusher extends Base
                     'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?share.*?)</i',
                     'prefix' => '',
                     'randomDelay' => false
-                ],
-                [ // 卧龙资源
+                ],*/
+                [
                     'webUrl' => 'https://wolongzy.net/detail/295032.html',
                     'regex' => '/>第(?P<num>\d+)集\s+(?P<url>https?:\/\/.*?\.m3u8)</i',
                     'prefix' => 'https://jx.inpower.cc/?url=',
-                    'randomDelay' => false
+                    'randomDelay' => true,
+                    'code' => 'wlzy',
+                    'name' => '卧龙资源'
                 ]
             ];
 
-            foreach ($webs as $w) {
+            foreach ($resources as $r) {
                 try {
-                    $webUrl = $w['webUrl'];
-                    if ($w['randomDelay']) { // 随机10min内延迟，模拟真人
+                    $webUrl = $r['webUrl'];
+                    if ($r['randomDelay']) { // 随机延迟，模拟真人
                         if (time() < $this->delayTime) {
                             Log::notice(sprintf('时候未到，跳过请求：%s', $webUrl));
                             continue;
                         } else {
-                            $this->delayTime = time() + mt_rand(1, 10) * 60;
+                            $this->delayTime = time() + mt_rand(5, 10) * 60;
                             Log::notice(sprintf('触发随机延迟，将在%s后重新发起请求：%s', date('Y-m-d H:i:s', $this->delayTime), $webUrl));
                         }
                     }
 
                     $request = $this->client->request('GET', $webUrl, ['proxy' => env('TMP_PROXY')]);
                     $response = (string)$request->getBody();
-                    if (preg_match_all($w['regex'], $response, $matches, PREG_SET_ORDER)) { // 匹配每集地址
+                    if (preg_match_all($r['regex'], $response, $matches, PREG_SET_ORDER)) { // 匹配每集地址
                         Log::notice(sprintf('成功从此地址匹配到剧集：%s', $webUrl));
-                        foreach ($matches as $item) {
+
+                        $allParts = [];
+                        foreach ($matches as $item) { // 整理剧集
                             $num = intval($item['num']);
-                            $taskName = sprintf('qyn_%d', $num);
-                            if (is_locked($taskName, true) || $num <= 25) { // 已看
+                            $taskName = sprintf('qyn_%s_%d', $r['code'], $num);
+                            if (is_locked($taskName, true) || $num <= 27) { // 已看
                                 continue;
                             }
 
-                            // 发送提醒
-                            $url = str_ireplace('http://', 'https://', $w['prefix'] . $item['url']);
-                            $content = sprintf(
-                                "[害羞]莎孃孃，《庆余年》又更新了，本次更新到第%d集，视频完整地址为：\n%s\n\n由于微信可能限制访问，如若遇到，就复制完整地址到浏览器打开观看。切莫相信视频中任何广告内容。\n\n此消息为程序自动推送，你可以发信提醒对方一起看。[爱心]\n\nby 罗先生",
-                                $num,
-                                $url
-                            );
+                            // 缓存地址到redis
+                            $url = str_ireplace('http://', 'https://', $r['prefix'] . $item['url']);
+                            $token = sprintf('%d_%s', $num, md5(uniqid(microtime() . mt_rand(), true)));
+                            Redis::set($token, $url);
 
-                            $rt = Text::send($friend, $content);
-                            if ($rt === false) {
-                                Log::error('消息发送失败');
-                                Mail::send('主人，消息推送失败', "消息内容：\n" . (string)$content);
-                            }
+                            $allParts[] = sprintf('第%d集：https://520.llf.design/copy/%s', $num, $token);
 
                             lock_task($taskName, true);
-                            sleep(1);
+                        }
+
+                        // 推送整理好的剧集
+                        $content = sprintf(
+                            "《庆余年》有更新了，本次共更新%d集，如下\n%s\n\n由于微信可能限制访问，点击地址跳转会自动复制网址，然后到浏览器粘贴观看。切莫相信视频中任何广告。[爱心]\n\n片源 「%s」",
+                            count($allParts),
+                            implode("\n", $allParts),
+                            $r['name']
+                        );
+
+                        $rt = Text::send($friend, $content);
+                        if ($rt === false) {
+                            Log::error('消息发送失败');
+                            Mail::send('主人，消息推送失败', "消息内容：\n" . (string)$content);
                         }
                     }
                 } catch (\Exception $e) {
-                    $errorMsg = sprintf('采集视频出错：%s', $e->getMessage());
+                    $errorMsg = sprintf("采集视频出错：%s\n目标地址：%s\n片源「%s」", $e->getMessage(), $r['webUrl'], $r['name']);
                     Log::error($errorMsg);
 
-                    if (!is_locked('collectionError')) { // 每天最多通知一次
+                    $collectionTaskName = sprintf('collectionError_%s', $r['code']);
+                    if (!is_locked($collectionTaskName)) { // 每天最多通知一次
                         Mail::send('主人，采集视频地址出了点状况', $errorMsg);
-                        lock_task('collectionError');
+                        lock_task($collectionTaskName);
                     }
                 }
             }
