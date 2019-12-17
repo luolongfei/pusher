@@ -172,8 +172,8 @@ class Pusher extends Base
 
                             // 缓存地址到redis
                             $url = str_ireplace('http://', 'https://', $r['prefix'] . $item['url']);
-                            $token = sprintf('%d_%s', $num, md5(uniqid(microtime() . mt_rand(), true)));
-                            Redis::set($token, $url);
+                            $token = sprintf('%s_%d', md5(uniqid(microtime() . mt_rand(), true)), $num);
+                            Redis::setex($token, config('qynTtl'), $url);
 
                             $allParts[] = sprintf("第%d集：\nhttps://520.llf.design/copy/%s", $num, $token);
 
