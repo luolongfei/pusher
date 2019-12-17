@@ -175,14 +175,17 @@ class Pusher extends Base
                             $token = sprintf('%d_%s', $num, md5(uniqid(microtime() . mt_rand(), true)));
                             Redis::set($token, $url);
 
-                            $allParts[] = sprintf('第%d集：https://520.llf.design/copy/%s', $num, $token);
+                            $allParts[] = sprintf("第%d集：\nhttps://520.llf.design/copy/%s", $num, $token);
 
                             lock_task($taskName, true);
                         }
 
                         // 推送整理好的剧集
+                        if (empty($allParts)) {
+                            continue;
+                        }
                         $content = sprintf(
-                            "《庆余年》有更新了，本次共更新%d集，如下\n%s\n\n由于微信可能限制访问，点击地址跳转会自动复制网址，然后到浏览器粘贴观看。切莫相信视频中任何广告。[爱心]\n\n片源 「%s」",
+                            "《庆余年》有更新了，本次共更新%d集，如下\n\n%s\n\n由于微信可能限制访问，点击地址跳转会自动复制网址，然后到浏览器粘贴观看。切莫相信视频中任何广告。[爱心]\n\n片源 「%s」",
                             count($allParts),
                             implode("\n", $allParts),
                             $r['name']
