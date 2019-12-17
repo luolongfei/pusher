@@ -117,11 +117,18 @@ class Pusher extends Base
 
         // 一直触发
         $messageHandler->setCustomHandler(function () {
+            $now = time();
+
+            // 每晚八点后更新
+            if ($now <= strtotime('20:00')) {
+                return;
+            }
+
             // 随机延迟，模拟真人
-            if (time() < $this->delayTime) {
+            if ($now < $this->delayTime) {
                 return;
             } else {
-                $this->delayTime = time() + mt_rand(5, 10) * 60;
+                $this->delayTime = $now + mt_rand(5, 10) * 60;
                 Log::notice(sprintf('触发随机延迟，今次请求后，将在%s后再次发起请求', date('Y-m-d H:i:s', $this->delayTime)));
             }
 
