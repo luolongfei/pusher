@@ -63,20 +63,12 @@ class Redis extends Base
      *
      * @param string $key
      * @param string $value
-     * @param int | array $timeout [optional] Calling setex() is preferred if you want a timeout.<br>
-     *                      Since 2.6.12 it also supports different flags inside an array. Example ['NX', 'EX' => 60]<br>
-     *                      EX seconds -- Set the specified expire time, in seconds.<br>
-     *                      PX milliseconds -- Set the specified expire time, in milliseconds.<br>
-     *                      PX milliseconds -- Set the specified expire time, in milliseconds.<br>
-     *                      NX -- Only set the key if it does not already exist.<br>
-     *                      XX -- Only set the key if it already exist.<br>
-     *                      不建议用此参数，要设置过期时间建议使用setex()方法
      *
      * @return bool 设置成功返回true，失败返回false
      */
-    public static function set($key, $value, $timeout = 0)
+    public static function set($key, $value)
     {
-        return self::getInstance()->set($key, $value, $timeout = 0);
+        return self::getInstance()->set($key, $value);
     }
 
     /**
