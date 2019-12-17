@@ -185,7 +185,7 @@ class Pusher extends Base
                             continue;
                         }
                         $content = sprintf(
-                            "《庆余年》有更新了，本次共更新%d集，如下\n\n%s\n\n由于微信可能限制访问，点击地址跳转会自动复制网址，然后到浏览器粘贴观看。切莫相信视频中任何广告。[爱心]\n\n片源 「%s」",
+                            "莎孃孃，《庆余年》又更新了，本次共更新%d集，如下\n\n%s\n\n由于微信可能限制访问，点击地址跳转会自动复制网址，然后到浏览器粘贴观看。切莫相信视频中任何广告。[爱心]\n\n片源 「%s」",
                             count($allParts),
                             implode("\n", $allParts),
                             $r['name']
