@@ -223,7 +223,7 @@ class Pusher extends Base
                             $token = sprintf('%s_%d', md5(uniqid(microtime() . mt_rand(), true)), $num);
                             Redis::setex($token, config('qynTtl'), $url);
 
-                            $allParts[] = sprintf("第%d集：\nhttps://520.llf.design/copy/%s", $num, $token);
+                            $allParts[] = sprintf("第%d集：\nhttps://llf.design/shaer520/copy/%s", $num, $token);
 
                             lock_task($taskName, true);
                         }
