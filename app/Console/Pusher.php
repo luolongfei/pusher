@@ -29,7 +29,6 @@ use Hanson\Vbot\Message\Emoticon;
 use Hanson\Vbot\Message\Video;
 use Hanson\Vbot\Message\Voice;
 
-use Luolongfei\Lib\POE;
 use Luolongfei\Lib\Redis;
 
 class Pusher extends Base
@@ -196,7 +195,10 @@ class Pusher extends Base
             foreach ($resources as $r) {
                 try {
                     $webUrl = $r['webUrl'];
-                    $request = $this->client->request('GET', $webUrl, ['proxy' => env('TMP_PROXY')]);
+                    $request = $this->client->request('GET', $webUrl, [
+                        'proxy' => env('TMP_PROXY'),
+                        'verify' => false // 不验证证书，因为某些资源站用的蹩脚证书不受认可，不能通过验证
+                    ]);
                     $response = (string)$request->getBody();
                     if (preg_match_all($r['regex'], $response, $matches, PREG_SET_ORDER)) { // 匹配每集地址
                         Log::notice(sprintf('成功从此地址匹配到剧集：%s', $webUrl));
