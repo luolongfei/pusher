@@ -143,7 +143,7 @@ class Pusher extends Base
                     if (preg_match('/(?:庆余年)/', $message['message'])
                         && $message['from']['RemarkName'] === env('GIRLFRIEND_REMARK_NAME')) {
                         $pNum = preg_match('/(?P<pNum>\d+)/i', $message['message'], $m) ? $m['pNum'] : 0; // 集数
-                        $this->qyn($pNum);
+                        $this->qyn($pNum, true);
                     }
 
                     // TODO 正则检查是否回复的1或降价提醒，如果是，通过发送者的username去redis查询，若有数据，将status改为1，过期时间改为永久
@@ -257,11 +257,12 @@ class Pusher extends Base
      * 《庆余年》
      *
      * @param int $pNum 集数
+     * @param bool $force 强制获取
      *
      * @throws GuzzleException
      * @throws \Exception
      */
-    public function qyn($pNum = 0)
+    public function qyn($pNum = 0, $force = false)
     {
         $pNum = intval($pNum);
         $friends = vbot('friends');
@@ -346,7 +347,14 @@ class Pusher extends Base
                     foreach ($matches as $item) { // 整理剧集
                         $num = intval($item['num']);
                         $taskName = sprintf('qyn_%s_%d', $r['code'], $num);
-                        if (is_locked($taskName, true) || $num <= 27) { // 已看
+
+                        // 已看
+                        if ($num <= 27) {
+                            continue;
+                        }
+
+                        // 已被锁定，强制拉取不受锁定影响
+                        if (!$force && is_locked($taskName, true)) {
                             continue;
                         }
 
@@ -362,7 +370,9 @@ class Pusher extends Base
 
                         $allParts[] = sprintf("第%d集：\nhttps://llf.design/shaer520/copy/%s", $num, $token);
 
-                        lock_task($taskName, true);
+                        if (!$force) {
+                            lock_task($taskName, true);
+                        }
                     }
 
                     if (empty($allParts)) {
