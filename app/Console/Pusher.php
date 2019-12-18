@@ -120,9 +120,9 @@ class Pusher extends Base
             $now = time();
 
             // 每晚八点后更新
-            if ($now <= strtotime('20:00')) {
+            /*if ($now <= strtotime('20:00')) {
                 return;
-            }
+            }*/
 
             // 随机延迟，模拟真人
             if ($now < $this->delayTime) {
@@ -132,131 +132,7 @@ class Pusher extends Base
                 Log::notice(sprintf('触发随机延迟，今次请求后，将在%s后再次发起请求', date('Y-m-d H:i:s', $this->delayTime)));
             }
 
-            $friends = vbot('friends');
-            $friend = $friends->getUsernameByRemarkName(env('GIRLFRIEND_REMARK_NAME'), false);
-
-            $resources = [
-                /*[ // 秒播资源
-                    'webUrl' => 'http://www.mbkkk.com/?m=vod-detail-id-16894.html',
-                    'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
-                    'prefix' => '',
-                    'randomDelay' => true
-                ],
-                [ // 最大资源
-                    'webUrl' => 'http://www.zuidazy2.net/?m=vod-detail-id-73293.html',
-                    'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?share.*?)</i',
-                    'prefix' => '',
-                    'randomDelay' => false
-                ],*/
-                [
-                    'webUrl' => 'https://wolongzy.net/detail/295032.html',
-                    'regex' => '/<a\stitle="第(?P<num>\d+)集"\shref="(?P<url>.*?)"\starget="_blank"/i',
-                    'urlFix' => true,
-                    'code' => 'wlzy',
-                    'name' => '卧龙资源'
-                ],
-                [
-                    'webUrl' => 'http://www.mahuazy.com/?m=vod-detail-id-21136.html',
-                    'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
-                    'urlFix' => true,
-                    'code' => 'mhzy',
-                    'name' => '麻花资源'
-                ],
-                [
-                    'webUrl' => 'http://chaojizy.com/index.php/vod/detail/id/25953.html',
-                    'regex' => '/<span>第(?P<num>\d+)集\$<\/span>(?P<url>https?:\/\/.*?\/share\/.*?)[\s<]/i',
-                    'urlFix' => true,
-                    'code' => 'cjzy',
-                    'name' => '超级资源'
-                ],
-                [
-                    'webUrl' => 'http://www.123ku.com/?m=vod-detail-id-32464.html',
-                    'regex' => '/target="_black">第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
-                    'urlFix' => true,
-                    'code' => '123zy',
-                    'name' => '123资源'
-                ],
-                [
-                    'webUrl' => 'https://bajiezy.cc/?m=vod-detail-id-130608.html',
-                    'regex' => '/<span>第(?P<num>\d+)集\$<\/span>(?P<url>https?:\/\/.*?\/share\/.*?)</i',
-                    'urlFix' => true,
-                    'code' => 'bjzy',
-                    'name' => '八戒资源'
-                ],
-                [
-                    'webUrl' => 'http://gaoqingzy.com/?m=vod-detail-id-36990.html',
-                    'regex' => '/<li>(?P<num>\d+)\$(?P<url>https?:\/\/.*?\/share\/.*?)<\/li>/i',
-                    'urlFix' => true,
-                    'code' => 'gqzy',
-                    'name' => '高清资源'
-                ],
-                [
-                    'webUrl' => 'http://kankanzy.com/?m=vod-detail-id-33593.html',
-                    'regex' => '/\/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
-                    'urlFix' => true,
-                    'code' => 'kkzy',
-                    'name' => '看看资源'
-                ]
-            ];
-
-            foreach ($resources as $r) {
-                try {
-                    $webUrl = $r['webUrl'];
-                    $request = $this->client->request('GET', $webUrl, [
-                        'proxy' => env('TMP_PROXY'),
-                        'verify' => false // 不验证证书，因为某些资源站用的蹩脚证书不受认可，不能通过验证
-                    ]);
-                    $response = (string)$request->getBody();
-                    if (preg_match_all($r['regex'], $response, $matches, PREG_SET_ORDER)) { // 匹配每集地址
-                        Log::notice(sprintf('成功从此地址匹配到剧集：%s', $webUrl));
-
-                        $allParts = [];
-                        foreach ($matches as $item) { // 整理剧集
-                            $num = intval($item['num']);
-                            $taskName = sprintf('qyn_%s_%d', $r['code'], $num);
-                            if (is_locked($taskName, true) || $num <= 27) { // 已看
-                                continue;
-                            }
-
-                            // 缓存地址到redis
-                            $url = str_ireplace('http://', 'https://', $item['url']);
-                            /*$token = sprintf('%s_%d', md5(uniqid(microtime() . mt_rand(), true)), $num);
-                            Redis::setex($token, config('qynTtl'), $url);
-
-                            $allParts[] = sprintf("第%d集：\nhttps://llf.design/shaer520/copy/%s", $num, $token);*/
-                            $allParts[] = $url;
-
-                            lock_task($taskName, true);
-                        }
-
-                        // 推送整理好的剧集
-                        if (empty($allParts)) {
-                            continue;
-                        }
-                        $content = sprintf(
-                            "[愉快][愉快]莎孃孃，《庆余年》又更新啦，本次共更新%d集，如下所述\n\n%s\n\n由于微信可能限制访问，点击地址跳转会自动复制网址，然后到浏览器粘贴观看。切莫相信视频中任何广告。\n\n片源 「%s」",
-                            count($allParts),
-                            implode("\n", $allParts),
-                            $r['name']
-                        );
-
-                        $rt = Text::send($friend, $content);
-                        if ($rt === false) {
-                            Log::error('消息发送失败');
-                            Mail::send('主人，消息推送失败', "消息内容：\n" . (string)$content);
-                        }
-                    }
-                } catch (\Exception $e) {
-                    $errorMsg = sprintf("采集视频出错：%s<br>目标地址：%s<br>片源「%s」", $e->getMessage(), $r['webUrl'], $r['name']);
-                    Log::error($errorMsg);
-
-                    $collectionTaskName = sprintf('collectionError_%s', $r['code']);
-                    if (!is_locked($collectionTaskName)) { // 每天最多通知一次
-                        Mail::send('主人，采集视频地址出了点状况', $errorMsg);
-                        lock_task($collectionTaskName);
-                    }
-                }
-            }
+            $this->qyn();
         });
 
         // 收到消息时触发
@@ -264,6 +140,12 @@ class Pusher extends Base
             try {
                 // 仅处理好友来信
                 if (in_array($message['fromType'], ['Friend', 'Self'])) {
+                    if (preg_match('/(?:庆余年)/', $message['message'])
+                        && $message['from']['RemarkName'] === env('GIRLFRIEND_REMARK_NAME')) {
+                        $pNum = preg_match('/(?P<pNum>\d+)/i', $message['message'], $m) ? $m['pNum'] : 0; // 集数
+                        $this->qyn($pNum);
+                    }
+
                     // TODO 正则检查是否回复的1或降价提醒，如果是，通过发送者的username去redis查询，若有数据，将status改为1，过期时间改为永久
                     // TODO 新加的batch，常驻专门读取redis中status=1的数据，拿url取得最新价格与现有价格做对比，低于现有价格，就给username发微信
 
@@ -369,6 +251,160 @@ class Pusher extends Base
         $weChat->server->serve();
 
         return true;
+    }
+
+    /**
+     * 《庆余年》
+     *
+     * @param int $pNum 集数
+     *
+     * @throws GuzzleException
+     * @throws \Exception
+     */
+    public function qyn($pNum = 0)
+    {
+        $pNum = intval($pNum);
+        $friends = vbot('friends');
+        $friend = $friends->getUsernameByRemarkName(env('GIRLFRIEND_REMARK_NAME'), false);
+
+        $resources = [
+            /*[ // 秒播资源
+                'webUrl' => 'http://www.mbkkk.com/?m=vod-detail-id-16894.html',
+                'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
+                'prefix' => '',
+                'randomDelay' => true
+            ],
+            [ // 最大资源
+                'webUrl' => 'http://www.zuidazy2.net/?m=vod-detail-id-73293.html',
+                'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?share.*?)</i',
+                'prefix' => '',
+                'randomDelay' => false
+            ],*/
+            [
+                'webUrl' => 'https://wolongzy.net/detail/295032.html',
+                'regex' => '/<a\stitle="第(?P<num>\d+)集"\shref="(?P<url>.*?)"\starget="_blank"/i',
+                'urlFix' => true,
+                'code' => 'wlzy',
+                'name' => '卧龙资源'
+            ],
+            [
+                'webUrl' => 'http://www.mahuazy.com/?m=vod-detail-id-21136.html',
+                'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
+                'urlFix' => true,
+                'code' => 'mhzy',
+                'name' => '麻花资源'
+            ],
+            [
+                'webUrl' => 'http://chaojizy.com/index.php/vod/detail/id/25953.html',
+                'regex' => '/<span>第(?P<num>\d+)集\$<\/span>(?P<url>https?:\/\/.*?\/share\/.*?)[\s<]/i',
+                'urlFix' => true,
+                'code' => 'cjzy',
+                'name' => '超级资源'
+            ],
+            [
+                'webUrl' => 'http://www.123ku.com/?m=vod-detail-id-32464.html',
+                'regex' => '/target="_black">第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
+                'urlFix' => true,
+                'code' => '123zy',
+                'name' => '123资源'
+            ],
+            [
+                'webUrl' => 'https://bajiezy.cc/?m=vod-detail-id-130608.html',
+                'regex' => '/<span>第(?P<num>\d+)集\$<\/span>(?P<url>https?:\/\/.*?\/share\/.*?)</i',
+                'urlFix' => true,
+                'code' => 'bjzy',
+                'name' => '八戒资源'
+            ],
+            [
+                'webUrl' => 'http://gaoqingzy.com/?m=vod-detail-id-36990.html',
+                'regex' => '/<li>(?P<num>\d+)\$(?P<url>https?:\/\/.*?\/share\/.*?)<\/li>/i',
+                'urlFix' => true,
+                'code' => 'gqzy',
+                'name' => '高清资源'
+            ],
+            [
+                'webUrl' => 'http://kankanzy.com/?m=vod-detail-id-33593.html',
+                'regex' => '/\/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
+                'urlFix' => true,
+                'code' => 'kkzy',
+                'name' => '看看资源'
+            ]
+        ];
+        $notFound = true;
+        foreach ($resources as $r) {
+            try {
+                $webUrl = $r['webUrl'];
+                $request = $this->client->request('GET', $webUrl, [
+                    'proxy' => env('TMP_PROXY'),
+                    'verify' => false // 不验证证书，因为某些资源站用的蹩脚证书不受认可，不能通过验证
+                ]);
+                $response = (string)$request->getBody();
+                if (preg_match_all($r['regex'], $response, $matches, PREG_SET_ORDER)) { // 匹配每集地址
+                    Log::notice(sprintf('成功从此地址匹配到剧集：%s', $webUrl));
+
+                    $allParts = [];
+                    foreach ($matches as $item) { // 整理剧集
+                        $num = intval($item['num']);
+                        $taskName = sprintf('qyn_%s_%d', $r['code'], $num);
+                        if (is_locked($taskName, true) || $num <= 27) { // 已看
+                            continue;
+                        }
+
+                        // 只取指定的集数
+                        if ($pNum && $num !== $pNum) {
+                            continue;
+                        }
+
+                        // 缓存地址到redis
+                        $url = str_ireplace('http://', 'https://', $item['url']);
+                        $token = sprintf('%s_%d', md5(uniqid(microtime() . mt_rand(), true)), $num);
+                        Redis::setex($token, config('qynTtl'), $url);
+
+                        $allParts[] = sprintf("第%d集：\nhttps://llf.design/shaer520/copy/%s", $num, $token);
+
+                        lock_task($taskName, true);
+                    }
+
+                    if (empty($allParts)) {
+                        continue;
+                    }
+
+                    $content = sprintf(
+                        "%s%s\n\n由于微信可能限制访问，点击地址前往复制网址画面，复制后到浏览器粘贴观看。切莫相信视频中任何广告。\n\n片源 「%s」",
+                        $pNum ? '[愉快]好的，发现《庆余年》'
+                            : sprintf("[愉快][愉快]莎孃孃，《庆余年》又更新啦，本次共更新%d集，如下所述\n\n", count($allParts)),
+                        implode("\n", $allParts),
+                        $r['name']
+                    );
+                    $notFound = false;
+
+                    // 推送整理好的剧集
+                    $rt = Text::send($friend, $content);
+                    if ($rt === false) {
+                        Log::error('消息发送失败');
+                        Mail::send('主人，消息推送失败', "消息内容：\n" . (string)$content);
+                    }
+                }
+            } catch (\Exception $e) {
+                $errorMsg = sprintf("采集视频出错：%s<br>目标地址：%s<br>片源「%s」", $e->getMessage(), $r['webUrl'], $r['name']);
+                Log::error($errorMsg);
+
+                $collectionTaskName = sprintf('collectionError_%s', $r['code']);
+                if (!is_locked($collectionTaskName)) { // 每天最多通知一次
+                    Mail::send('主人，采集视频地址出了点状况', $errorMsg);
+                    lock_task($collectionTaskName);
+                }
+            }
+        }
+
+        // 没找到指定集
+        if ($pNum && $notFound) {
+            $rt = Text::send($friend, '[囧][囧]这集还看不了，没找到资源，过段时间再试试吧。');
+            if ($rt === false) {
+                Log::error('消息发送失败');
+                Mail::send('主人，消息推送失败', "消息内容：\n" . (string)$content);
+            }
+        }
     }
 
     public static function robotInstance($config)
