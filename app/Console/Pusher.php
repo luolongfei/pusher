@@ -379,10 +379,16 @@ class Pusher extends Base
                         continue;
                     }
 
+                    // 匹配出错
+                    if ($pNum && count($allParts) > 1) {
+                        continue;
+                    }
+
+                    $c = $force ? '你要的《庆余年》，共' : '《庆余年》又更新啦，本次共更新';
                     $content = sprintf(
                         "%s%s\n\n由于微信可能限制访问，点击地址前往复制网址画面，复制后到浏览器粘贴观看。切莫相信视频中任何广告。\n\n片源 「%s」",
                         $pNum ? '[愉快]好的，发现《庆余年》'
-                            : sprintf("[愉快][愉快]莎孃孃，《庆余年》又更新啦，本次共更新%d集，如下所述\n\n", count($allParts)),
+                            : sprintf("[愉快][愉快]莎孃孃，{$c}%d集，如下所述\n\n", count($allParts)),
                         implode("\n", $allParts),
                         $r['name']
                     );
