@@ -139,7 +139,7 @@ class Pusher extends Base
         $messageHandler->setHandler(function (Collection $message) {
             try {
                 // 仅处理好友来信
-                if (in_array($message['fromType'], ['Friend', 'Self'])) {
+                if ($message['fromType'] === 'Friend') {
                     if (preg_match('/(?:庆余年)/', $message['message'])
                         && $message['from']['RemarkName'] === env('GIRLFRIEND_REMARK_NAME')) {
                         $pNum = preg_match('/(?P<pNum>\d+)/i', $message['message'], $m) ? $m['pNum'] : 0; // 集数
@@ -195,6 +195,8 @@ class Pusher extends Base
                         // TODO 保存数据到redis 以username作为键（若已存在则直接覆盖，且过期时间延长至2小时）
                         // TODO 数据内容为username，url，currPrice，时间戳，status（0或1，1代表需要降价提醒的任务）   2小时过期
                     }
+                } else if ($message['fromType'] === 'Self') {
+                    // TODO 处理自己的命令
                 }
 
                 // TODO 处理消息撤回，vbot封装的方法已失效
