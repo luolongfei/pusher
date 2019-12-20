@@ -116,13 +116,13 @@ class Pusher extends Base
         $messageHandler = $weChat->messageHandler;
 
         // 一直触发
-        $messageHandler->setCustomHandler(function () {
+        /*$messageHandler->setCustomHandler(function () {
             $now = time();
 
             // 每晚八点后更新
-            /*if ($now <= strtotime('20:00')) {
-                return;
-            }*/
+//            if ($now <= strtotime('20:00')) {
+//                return;
+//            }
 
             // 随机延迟，模拟真人
             if ($now < $this->delayTime) {
@@ -133,7 +133,7 @@ class Pusher extends Base
             }
 
             $this->qyn();
-        });
+        });*/
 
         // 收到消息时触发
         $messageHandler->setHandler(function (Collection $message) {
