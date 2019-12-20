@@ -283,13 +283,6 @@ class Pusher extends Base
                 'prefix' => '',
                 'randomDelay' => false
             ],*/
-            /*[
-                'webUrl' => 'https://wolongzy.net/detail/295032.html',
-                'regex' => '/<a\stitle="第(?P<num>\d+)集"\shref="(?P<url>.*?)"\starget="_blank"/i',
-                'urlFix' => true,
-                'code' => 'wlzy',
-                'name' => '卧龙资源'
-            ],*/
             [
                 'webUrl' => 'http://www.mahuazy.com/?m=vod-detail-id-21136.html',
                 'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
@@ -326,11 +319,25 @@ class Pusher extends Base
                 'name' => '高清资源'
             ],
             [
+                'webUrl' => 'http://www.okzyw.com/?m=vod-detail-id-43646.html',
+                'regex' => '/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?share.*?)</i',
+                'urlFix' => true,
+                'code' => 'okzy',
+                'name' => 'OK资源'
+            ],
+            [
                 'webUrl' => 'http://kankanzy.com/?m=vod-detail-id-33593.html',
                 'regex' => '/\/>第(?P<num>\d+)集\$(?P<url>https?:\/\/.*?\/share\/.*?)</i',
                 'urlFix' => true,
                 'code' => 'kkzy',
                 'name' => '看看资源'
+            ],
+            [
+                'webUrl' => 'https://wolongzy.net/detail/295032.html',
+                'regex' => '/<a\stitle="第(?P<num>\d+)集"\shref="(?P<url>.*?share.*?)"/i',
+                'urlFix' => true,
+                'code' => 'wlzy',
+                'name' => '卧龙资源'
             ]
         ];
         $notFound = true;
