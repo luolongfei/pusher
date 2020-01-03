@@ -7,6 +7,7 @@
  * @time 16:34
  */
 
+use Luolongfei\Lib\Argv;
 use Luolongfei\Lib\Config;
 use Luolongfei\Lib\Log;
 use Luolongfei\Lib\Env;
@@ -212,5 +213,20 @@ if (!function_exists('env')) {
         }
 
         return $value;
+    }
+}
+
+if (!function_exists('get_argv')) {
+    /**
+     * 获取命令行传参
+     *
+     * @param string $name
+     * @param string $defaults
+     *
+     * @return mixed|string
+     */
+    function get_argv(string $name, string $defaults = '')
+    {
+        return Argv::instance()->get($name, $defaults);
     }
 }
