@@ -15,7 +15,8 @@
     "predis/predis": "^1.1",
     "ext-json": "*",
     "ext-bcmath": "*",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "overtrue/chinese-calendar": "^1.0"
   },
   "license": "MIT",
   "authors": [

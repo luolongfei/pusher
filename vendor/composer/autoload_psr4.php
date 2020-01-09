@@ -20,6 +20,7 @@ return array(
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'Predis\\' => array($vendorDir . '/predis/predis/src'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
+    'Overtrue\\ChineseCalendar\\' => array($vendorDir . '/overtrue/chinese-calendar/src'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'Luolongfei\\Lib\\' => array($baseDir . '/libs'),
     'Luolongfei\\App\\' => array($baseDir . '/app'),

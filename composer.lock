@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "86a0c0a7877419b1603a77d8ebb9c280",
+    "content-hash": "5a9677cebe46a0a358276531a13802a9",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -1143,6 +1143,59 @@
                 "time"
             ],
             "time": "2019-10-14T05:51:36+00:00"
+        },
+        {
+            "name": "overtrue/chinese-calendar",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/overtrue/chinese-calendar.git",
+                "reference": "0b433ac1bd837b8d3f79ad914f9d22bdbdf38c1d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/overtrue/chinese-calendar/zipball/0b433ac1bd837b8d3f79ad914f9d22bdbdf38c1d",
+                "reference": "0b433ac1bd837b8d3f79ad914f9d22bdbdf38c1d",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": ">=5.5.9"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Overtrue\\ChineseCalendar\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "overtrue",
+                    "email": "anzhengchao@gmail.com"
+                }
+            ],
+            "description": "中国农历转换与查询工具",
+            "keywords": [
+                "Chinese",
+                "calendar",
+                "lunar",
+                "lunar2solar",
+                "solar",
+                "solar2lunar"
+            ],
+            "time": "2019-09-02T07:26:57+00:00"
         },
         {
             "name": "phpmailer/phpmailer",

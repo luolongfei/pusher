@@ -40,6 +40,10 @@ class ComposerStaticInit99b73a665e0d2066a2cb8dd066883cba
             'Predis\\' => 7,
             'PHPMailer\\PHPMailer\\' => 20,
         ),
+        'O' => 
+        array (
+            'Overtrue\\ChineseCalendar\\' => 25,
+        ),
         'M' => 
         array (
             'Monolog\\' => 8,
@@ -138,6 +142,10 @@ class ComposerStaticInit99b73a665e0d2066a2cb8dd066883cba
         'PHPMailer\\PHPMailer\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
+        ),
+        'Overtrue\\ChineseCalendar\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/overtrue/chinese-calendar/src',
         ),
         'Monolog\\' => 
         array (
