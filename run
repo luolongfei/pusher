@@ -36,7 +36,6 @@ set_exception_handler('exception_handler');
 require VENDOR_PATH . '/autoload.php';
 
 use Luolongfei\Lib\Log;
-use Luolongfei\App\Console\Pusher;
 use Luolongfei\Lib\Mail;
 
 /**
@@ -62,10 +61,28 @@ function exception_handler(\Exception $e)
 }
 
 try {
+    $class = sprintf('Luolongfei\App\Console\%s', get_argv('c', 'Pusher'));
+
+    if (get_argv('help') || get_argv('h')) {
+        $desc = <<<FLL
+Description
+Params:
+-c: <string> 指定要实例化的类名。默认调用Pusher类
+-m: <string> 指定要调用的方法名（不支持静态方法）。默认调用handle方法
+-h: 显示说明
+
+Example: 
+$ php run -c=Pusher -m=handle
+
+FLL;
+        echo $desc;
+        exit(0);
+    }
+
     /**
-     * php run --session=vbot
+     * 微信推送执行 php run --session=vbot
      */
-    Pusher::instance()->handle();
+    $class::instance()->handle();
 } catch (\Exception $e) {
     system_log('执行出错：' . $e->getMessage(), $e->getTrace());
 }
