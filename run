@@ -13,7 +13,7 @@ error_reporting(E_ERROR);
 ini_set('display_errors', 1);
 set_time_limit(0);
 
-define('IS_CLI', PHP_SAPI === 'cli' ? true : false);
+define('IS_CLI', PHP_SAPI === 'cli');
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT_PATH', realpath(__DIR__));
 define('VENDOR_PATH', realpath(ROOT_PATH . '/vendor'));
@@ -73,6 +73,7 @@ Params:
 
 Example: 
 $ php run -c=Pusher -m=handle
+$ php run -c=BirthdayReminder
 
 FLL;
         echo $desc;
