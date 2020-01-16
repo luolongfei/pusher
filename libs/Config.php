@@ -19,30 +19,55 @@ class Config
     /**
      * @var array 配置
      */
-    protected static $config;
+    protected $allConfig;
 
     public function __construct()
     {
+        $this->allConfig = require ROOT_PATH . '/config.php';
+    }
+
+    /**
+     * 获取配置
+     *
+     * @param string $key
+     *
+     * @return array|mixed|null
+     */
+    public function get($key = '')
+    {
+        $allConfig = $this->allConfig;
+
+        if (strlen($key)) {
+            if (strpos($key, '.')) {
+                $keys = explode('.', $key);
+                $val = $allConfig;
+                foreach ($keys as $k) {
+                    if (!isset($val[$k])) {
+                        return null; // 任一下标不存在就返回null
+                    }
+
+                    $val = $val[$k];
+                }
+
+                return $val;
+            } else {
+                if (isset($allConfig[$key])) {
+                    return $allConfig[$key];
+                }
+
+                return null;
+            }
+        }
+
+        return $allConfig;
     }
 
     public static function instance()
     {
-        if (!self::$instance instanceof Config) {
+        if (!self::$instance instanceof self) {
             self::$instance = new self();
         }
 
         return self::$instance;
-    }
-
-    /**
-     * @return array|mixed
-     */
-    public static function getConfig()
-    {
-        if (self::$config === null) {
-            self::$config = require ROOT_PATH . '/config.php';
-        }
-
-        return self::$config;
     }
 }

@@ -22,31 +22,7 @@ if (!function_exists('config')) {
      */
     function config($key = '')
     {
-        $allConfig = Config::instance()::getConfig();
-
-        if (strlen($key)) {
-            if (strpos($key, '.')) {
-                $keys = explode('.', $key);
-                $val = $allConfig;
-                foreach ($keys as $k) {
-                    if (!isset($val[$k])) {
-                        return null; // 任一下标不存在就返回null
-                    }
-
-                    $val = $val[$k];
-                }
-
-                return $val;
-            } else {
-                if (isset($allConfig[$key])) {
-                    return $allConfig[$key];
-                }
-
-                return null;
-            }
-        }
-
-        return $allConfig;
+        return Config::instance()->get($key);
     }
 }
 
