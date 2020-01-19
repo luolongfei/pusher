@@ -37,17 +37,17 @@ class Argv
      * 获取命令行参数
      *
      * @param string $name
-     * @param string $defaults
+     * @param string $default
      *
      * @return mixed|string
      */
-    public function get(string $name, string $defaults = '')
+    public function get(string $name, string $default = '')
     {
         if (!$this->allArgvs) {
             $this->setAllArgvs();
         }
 
-        return $this->allArgvs[$name] ?? $defaults;
+        return $this->allArgvs[$name] ?? $default;
     }
 
     /**

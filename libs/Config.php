@@ -30,10 +30,11 @@ class Config
      * 获取配置
      *
      * @param string $key
+     * @param string $default 默认值
      *
      * @return array|mixed|null
      */
-    public function get($key = '')
+    public function get($key = '', $default = null)
     {
         $allConfig = $this->allConfig;
 
@@ -55,7 +56,7 @@ class Config
                     return $allConfig[$key];
                 }
 
-                return null;
+                return $default;
             }
         }
 

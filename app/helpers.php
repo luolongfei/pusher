@@ -17,12 +17,13 @@ if (!function_exists('config')) {
      * 获取配置
      *
      * @param string $key 键，支持点式访问
+     * @param string $default 默认值
      *
      * @return array|mixed
      */
-    function config($key = '')
+    function config($key = '', $default = null)
     {
-        return Config::instance()->get($key);
+        return Config::instance()->get($key, $default);
     }
 }
 
@@ -197,12 +198,12 @@ if (!function_exists('get_argv')) {
      * 获取命令行传参
      *
      * @param string $name
-     * @param string $defaults
+     * @param string $default
      *
      * @return mixed|string
      */
-    function get_argv(string $name, string $defaults = '')
+    function get_argv(string $name, string $default = '')
     {
-        return Argv::instance()->get($name, $defaults);
+        return Argv::instance()->get($name, $default);
     }
 }
