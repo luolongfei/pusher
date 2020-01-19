@@ -15,12 +15,18 @@ return [
      * 邮箱配置
      */
     'mail' => [
-        'from' => 'llf.push@gmail.com', // 发件人
-        'to' => 'mybsdc@qq.com', // 收件人
-        'replyTo' => 'mybsdc@gmail.com', // 接收回复的邮箱
-        'username' => env('MAIL_USERNAME'), // 邮箱账户
-        'password' => env('MAIL_PASSWORD'), // 邮箱密码
+        /**
+         * 目前机器人邮箱账户支持谷歌邮箱、QQ邮箱以及163邮箱，程序会自动判断填入的邮箱类型。注意，QQ邮箱与163邮箱均使用账户加授权码的方式
+         * 登录，谷歌邮箱使用账户加密码的方式登录，请知悉。
+         */
+        'to' => env('TO'), // 接收通知的邮箱
+        'toName' => '主人', // 收件人名字
+        'username' => env('MAIL_USERNAME'), // 机器人邮箱账户
+        'password' => env('MAIL_PASSWORD'), // 机器人邮箱密码或授权码
         'debug' => 0, // debug，当邮件无法发送的情况下开启此项观察命令行界面提示信息，正式环境应关闭 0：关闭 1：客户端信息 2：客户端和服务端信息
+
+        // 'replyTo' => 'mybsdc@qq.com', // 接收回复的邮箱
+        // 'replyToName' => '作者', // 接收回复的人名
     ],
 
     /**

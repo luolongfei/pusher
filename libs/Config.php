@@ -44,7 +44,7 @@ class Config
                 $val = $allConfig;
                 foreach ($keys as $k) {
                     if (!isset($val[$k])) {
-                        return null; // 任一下标不存在就返回null
+                        return $default; // 任一下标不存在就返回默认值
                     }
 
                     $val = $val[$k];

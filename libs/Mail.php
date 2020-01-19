@@ -22,6 +22,7 @@ class Mail
     /**
      * @return PHPMailer
      * @throws MailException
+     * @throws \Exception
      */
     public static function mail()
     {
@@ -29,17 +30,35 @@ class Mail
             self::$mail = new PHPMailer(true);
 
             // 邮件服务配置
-            self::$mail->SMTPDebug = config('mail.debug'); // debug，正式环境应关闭 0：关闭 1：客户端信息 2：客户端和服务端信息
+            $username = config('mail.username');
+            $password = config('mail.password');
+            if (stripos($username, '@gmail.com') !== false) {
+                $host = 'smtp.gmail.com';
+                $secure = 'tls';
+                $port = 587;
+            } else if (stripos($username, '@qq.com') !== false) {
+                $host = 'smtp.qq.com';
+                $secure = 'tls';
+                $port = 587;
+            } else if (stripos($username, '@163.com') !== false) {
+                $host = 'smtp.163.com';
+                $secure = 'ssl';
+                $port = 465;
+            } else {
+                throw new \Exception('不受支持的邮箱。目前仅支持谷歌邮箱、QQ邮箱以及163邮箱，推荐使用谷歌邮箱。');
+            }
+
+            self::$mail->SMTPDebug = config('mail.debug'); // Debug，正式环境应关闭 0：关闭 1：客户端信息 2：客户端和服务端信息
             self::$mail->isSMTP(); // 告诉PHPMailer使用SMTP
-            self::$mail->Host = 'smtp.gmail.com'; // SMTP服务器
+            self::$mail->Host = $host; // SMTP服务器
             self::$mail->SMTPAuth = true; // 启用SMTP身份验证
-            self::$mail->Username = config('mail.username'); // 账号
-            self::$mail->Password = config('mail.password'); // 密码
-            self::$mail->SMTPSecure = 'tls'; // 将加密系统设置为使用 - ssl（不建议使用）或tls
-            self::$mail->Port = 587; // 设置SMTP端口号 - tsl使用587端口，ssl使用465端口
+            self::$mail->Username = $username; // 账号
+            self::$mail->Password = $password; // 密码或授权码
+            self::$mail->SMTPSecure = $secure; // 将加密系统设置为使用 - ssl（不建议使用）或tls
+            self::$mail->Port = $port; // 设置SMTP端口号 - tsl使用587端口，ssl使用465端口
             self::$mail->CharSet = 'UTF-8'; // 防止中文邮件乱码
             self::$mail->setLanguage('zh_cn', VENDOR_PATH . '/phpmailer/phpmailer/language/'); // 设置语言
-            self::$mail->setFrom(config('mail.from'), 'im robot'); // 发件人
+            self::$mail->setFrom($username, 'im robot'); // 发件人
         }
 
         return self::$mail;
@@ -57,8 +76,8 @@ class Mail
      */
     public static function send($subject, $content, $to = '', $template = '')
     {
-        self::mail()->addAddress($to ?: config('mail.to'), '罗叔叔'); // 添加收件人，参数2选填
-        self::mail()->addReplyTo(config('mail.replyTo'), '罗飞飞'); // 备用回复地址，收到的回复的邮件将被发到此地址
+        self::mail()->addAddress($to ?: config('mail.to'), config('mail.toName', '主人')); // 添加收件人，参数2选填
+        self::mail()->addReplyTo(config('mail.replyTo', 'mybsdc@qq.com'), config('mail.replyToName', '作者')); // 备用回复地址，收到的回复的邮件将被发到此地址
 
         /**
          * 抄送和密送都是添加收件人，抄送方式下，被抄送者知道除被密送者外的所有的收件人，密送方式下，
