@@ -78,6 +78,9 @@ return [
     // 开始发奋图强
     'WORK_HARD_DATE_START' => '2020-02-28',
 
+    // 倒计时
+    'countdown' => 3,
+
     /**
      * 匹配商城URL的正则
      */

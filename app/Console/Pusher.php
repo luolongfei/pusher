@@ -149,6 +149,12 @@ class Pusher extends Base
                 Log::error('发送或获取诗歌文摘出错：' . $e->getMessage());
             }*/
 
+            // 倒数
+            for ($i = config('countdown'); $i > 0; $i--) {
+                Text::send($friend, $i);
+                sleep(1);
+            }
+
             $content = sprintf("%s起床啦，该开始学习了，今天是发奋的第%s\n\n%s", $this->getEmoji(), $this->stat(), $poetryContent);
             $rt = Text::send($friend, $content);
 
