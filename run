@@ -61,8 +61,6 @@ function exception_handler(\Exception $e)
 }
 
 try {
-    $class = sprintf('Luolongfei\App\Console\%s', get_argv('c', 'Pusher'));
-
     if (get_argv('help') || get_argv('h')) {
         $desc = <<<FLL
 Description
@@ -83,7 +81,10 @@ FLL;
     /**
      * 微信推送执行 php run --session=vbot
      */
-    $class::instance()->handle();
+    $class = sprintf('Luolongfei\App\Console\%s', get_argv('c', 'Pusher'));
+    $fn = get_argv('m', 'handle');
+
+    $class::instance()->$fn();
 } catch (\Exception $e) {
-    system_log('执行出错：' . $e->getMessage(), $e->getTrace());
+    system_log(sprintf('执行出错：<red>%s</red>', $e->getMessage()), $e->getTrace());
 }

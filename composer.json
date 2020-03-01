@@ -16,7 +16,8 @@
     "ext-json": "*",
     "ext-bcmath": "*",
     "ext-pdo": "*",
-    "overtrue/chinese-calendar": "^1.0"
+    "overtrue/chinese-calendar": "^1.0",
+    "kevinlebrun/colors.php": "^1.0"
   },
   "license": "MIT",
   "authors": [

@@ -7,6 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'UpdateHelper\\' => array($vendorDir . '/kylekatarnls/update-helper/src'),
-    'PhpOption\\' => array($vendorDir . '/phpoption/phpoption/src'),
     'PHPQRCode' => array($vendorDir . '/aferrandini/phpqrcode/lib'),
+    'Colors' => array($vendorDir . '/kevinlebrun/colors.php/src'),
 );

@@ -11,6 +11,7 @@ use Luolongfei\Lib\Argv;
 use Luolongfei\Lib\Config;
 use Luolongfei\Lib\Log;
 use Luolongfei\Lib\Env;
+use Luolongfei\Lib\PhpColor;
 
 if (!function_exists('config')) {
     /**
@@ -34,11 +35,17 @@ if (!function_exists('system_log')) {
      * @param $content
      * @param array $response
      * @param string $fileName
+     * @description 受支持的着色标签
+     * 'reset', 'bold', 'dark', 'italic', 'underline', 'blink', 'reverse', 'concealed', 'default', 'black', 'red',
+     * 'green', 'yellow', 'blue', 'magenta', 'cyan', 'light_gray', 'dark_gray', 'light_red', 'light_green',
+     * 'light_yellow', 'light_blue', 'light_magenta', 'light_cyan', 'white', 'bg_default', 'bg_black', 'bg_red',
+     * 'bg_green', 'bg_yellow', 'bg_blue', 'bg_magenta', 'bg_cyan', 'bg_light_gray', 'bg_dark_gray', 'bg_light_red',
+     * 'bg_light_green','bg_light_yellow', 'bg_light_blue', 'bg_light_magenta', 'bg_light_cyan', 'bg_white'
      */
     function system_log($content, array $response = [], $fileName = '')
     {
         try {
-            $path = sprintf('%s/logs/system_log/%s/', ROOT_PATH, date('Y-m'));
+            $path = sprintf('%s/logs/%s/', ROOT_PATH, date('Y-m'));
             $file = $path . ($fileName ?: date('d')) . '.log';
 
             if (!is_dir($path)) {
@@ -52,16 +59,25 @@ if (!function_exists('system_log')) {
                 chmod($file, 0666);
             }
 
-            fwrite($handle, sprintf(
-                    "[%s] %s %s\n",
-                    date('Y-m-d H:i:s'),
-                    is_string($content) ? $content : json_encode($content),
-                    $response ? json_encode($response, JSON_UNESCAPED_UNICODE) : '')
-            );
+            $msg = sprintf(
+                "[%s] %s %s\n",
+                date('Y-m-d H:i:s'),
+                is_string($content) ? $content : json_encode($content),
+                $response ? json_encode($response, JSON_UNESCAPED_UNICODE) : '');
 
+            // 尝试为消息着色
+            $c = PhpColor::instance()->getColorInstance();
+            echo $c($msg)->colorize();
+
+            // 干掉着色标签
+            $msg = strip_tags($msg); // 不完整或者破损标签将导致更多的数据被删除
+
+            fwrite($handle, $msg);
             fclose($handle);
+
+            flush();
         } catch (\Exception $e) {
-            // DO NOTHING
+            // do nothing
         }
     }
 }

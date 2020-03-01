@@ -14,8 +14,8 @@ use Hanson\Vbot\Message\Traits\SendAble;
 
 class File extends Message implements MessageInterface
 {
-    use Multimedia, SendAble;
-
+    use Multimedia;
+    use SendAble;
     const API = 'webwxsendappmsg?fun=async&f=json&';
     const DOWNLOAD_API = 'webwxgetmedia';
     const TYPE = 'file';
@@ -29,7 +29,7 @@ class File extends Message implements MessageInterface
         return $this->getCollection($msg, static::TYPE);
     }
 
-    protected function getExpand():array
+    protected function getExpand(): array
     {
         return ['title' => $this->title];
     }
@@ -74,13 +74,13 @@ class File extends Message implements MessageInterface
     protected static function getDownloadOption($msg)
     {
         return ['query' => [
-                'sender'            => $msg['FromUserName'],
-                'mediaid'           => $msg['MediaId'],
-                'filename'          => $msg['FileName'],
-                'fromuser'          => vbot('myself')->username,
-                'pass_ticket'       => vbot('config')['server.passTicket'],
-                'webwx_data_ticket' => static::getTicket(),
-            ],
+            'sender'            => $msg['FromUserName'],
+            'mediaid'           => $msg['MediaId'],
+            'filename'          => $msg['FileName'],
+            'fromuser'          => vbot('myself')->username,
+            'pass_ticket'       => vbot('config')['server.passTicket'],
+            'webwx_data_ticket' => static::getTicket(),
+        ],
         ];
     }
 

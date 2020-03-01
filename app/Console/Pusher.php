@@ -19,6 +19,7 @@ use Luolongfei\Lib\CatDiscount;
 
 use Hanson\Vbot\Foundation\Vbot as Robot;
 use Luolongfei\Lib\MysqlPDO;
+use Luolongfei\Lib\POE;
 use Vbot\Blacklist\Blacklist;
 use Vbot\GuessNumber\GuessNumber;
 use Vbot\HotGirl\HotGirl;
@@ -36,7 +37,7 @@ class Pusher extends Base
     /**
      * 版本号
      */
-    const VERSION = '0.2.2 beta';
+    const VERSION = '0.3.0 beta';
 
     /**
      * @var Pusher
@@ -58,11 +59,6 @@ class Pusher extends Base
      */
     public $client;
 
-    /**
-     * @var int 随机延迟至此时间
-     */
-    public $delayTime = 0;
-
     public function __construct($session = null)
     {
         $this->config = config('weChat');
@@ -70,22 +66,6 @@ class Pusher extends Base
         if ($session) {
             $this->config['session'] = $session;
         }
-
-        // 实例化独立的curl客户端
-        $this->client = new Client([
-            'headers' => [
-                'Accept' => '*/*',
-                'Accept-Encoding' => 'gzip;q=1.0, compress;q=0.5',
-                'Accept-Language' => 'zh-Hans-CN;q=1.0, zh-Hant-CN;q=0.9, ja-CN;q=0.8',
-                'Connection' => 'keep-alive',
-                'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8',
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36',
-                'Referer' => '',
-            ],
-            'timeout' => 30.0,
-            'http_errors' => false,
-            'cookies' => true,
-        ]);
     }
 
     /**
@@ -116,24 +96,71 @@ class Pusher extends Base
         $messageHandler = $weChat->messageHandler;
 
         // 一直触发
-        /*$messageHandler->setCustomHandler(function () {
-            $now = time();
-
-            // 每晚八点后更新
-//            if ($now <= strtotime('20:00')) {
-//                return;
-//            }
-
-            // 随机延迟，模拟真人
-            if ($now < $this->delayTime) {
+        $messageHandler->setCustomHandler(function () {
+            if (is_locked('notice_task') || time() <= strtotime('06:30')) { // 每天一次，06:30提醒
                 return;
-            } else {
-                $this->delayTime = $now + mt_rand(5, 10) * 60;
-                Log::notice(sprintf('触发随机延迟，今次请求后，将在%s后再次发起请求', date('Y-m-d H:i:s', $this->delayTime)));
             }
 
-            $this->qyn();
-        });*/
+            $friends = vbot('friends');
+            $friend = $friends->getUsernameByRemarkName(env('GIRLFRIEND_REMARK_NAME'), false);
+
+            /**
+             * 随机诗词
+             */
+            $retry = 0;
+            while (true) {
+                try {
+                    if ($retry > config('maxRetry')) {
+                        break;
+                    }
+
+                    /*$poetryApi = [
+                        'shuqing/aiqing',
+                        'shuqing/sinian',
+                        'rensheng/lizhi',
+                    ];*/
+                    $poetry = Curl::get('https://v1.jinrishici.com/all.json');
+                    $poetry = json_decode($poetry, true);
+
+                    $poetryContent = sprintf(
+                        "「%s」\n\n摘自 %s《%s》",
+                        $poetry['content'],
+                        $poetry['author'],
+                        $poetry['origin']
+                    );
+
+                    if ($this->poetryCheck($poetryContent)) {
+                        break;
+                    }
+
+                    $retry++;
+
+                    Log::info(sprintf('检出低质量诗词，已丢弃并重新获取。重试次数：%d', $retry));
+                } catch (\Exception $e) {
+                    Log::error('获取随机诗词出错：' . $e->getMessage());
+                }
+
+                sleep(1);
+            }
+
+            /*try {
+                Text::send($friend, POE::getPoetry());
+            } catch (\Exception $e) {
+                Log::error('发送或获取诗歌文摘出错：' . $e->getMessage());
+            }*/
+
+            $content = sprintf("%s起床啦，该开始学习了，今天是发奋的第%s\n\n%s", $this->getEmoji(), $this->stat(), $poetryContent);
+            $rt = Text::send($friend, $content);
+
+            if ($rt === false) {
+                Log::error('消息发送失败');
+                Mail::send('主人，消息推送失败', "消息内容：\n" . $content);
+            }
+
+            lock_task('notice_task');
+
+            usleep(500000);
+        });
 
         // 收到消息时触发
         $messageHandler->setHandler(function (Collection $message) {
@@ -268,7 +295,7 @@ class Pusher extends Base
      *
      * @return bool
      */
-    public static function poetryCheck($poetry = '', $rules = [])
+    public function poetryCheck($poetry = '', $rules = [])
     {
         $rules = $rules ?: config('lowQualityKeywords');
         if (empty($rules)) {
@@ -288,5 +315,94 @@ class Pusher extends Base
         $regex = sprintf('/(?:%s)/i', ltrim($regex, '|'));
 
         return preg_match($regex, $poetry) === 0;
+    }
+
+    /**
+     * 随机获取表情
+     *
+     * @param int $multiplier 重复次数
+     *
+     * @return string
+     */
+    public function getEmoji($multiplier = 2)
+    {
+        $mood = [
+            '[嘿哈]',
+            '[捂脸]',
+            '[奸笑]',
+            '[机智]',
+            '[皱眉]',
+            '[耶]',
+            '[吃瓜]',
+            '[加油]',
+            '[汗]',
+            '[天啊]',
+            '[Emm]',
+            '[社会社会]',
+            '[旺柴]',
+            '[好的]',
+            '[打脸]',
+            '[哇]',
+            '[呲牙]',
+            '[害羞]',
+            '[愉快]',
+            '[白眼]',
+            '[困]',
+            '[囧]',
+            '[惊恐]',
+            '[流汗]',
+            '[憨笑]',
+            '[悠闲]',
+            '[奋斗]',
+            '[嘘]',
+            '[晕]',
+            '[敲打]',
+            '[抠鼻]',
+            '[鼓掌]',
+            '[坏笑]',
+            '[左哼哼]',
+            '[右哼哼]',
+            '[哈欠]',
+            '[阴险]',
+            '[可怜]',
+            '[猪头]',
+            '[发抖]',
+            '[转圈]',
+            '[跳跳]',
+        ];
+
+        $emoji = $mood[mt_rand(0, count($mood) - 1)];
+
+        return str_repeat($emoji, $multiplier);
+    }
+
+    /**
+     * 统计距离某天过去了多久
+     *
+     * @param string $date
+     * @param string $timeType m:month | h:hour | d:day
+     *
+     * @return string
+     */
+    public function stat($date = '', $timeType = 'd')
+    {
+        $date = $date ?: config('WORK_HARD_DATE_START');
+        $start = strtotime($date);
+
+        $time = '无穷大';
+        switch ($timeType) {
+            case 'm':
+                $monthNum = (date('Y') - date('Y', $start)) * 12 + (date('n') - date('n', $start));
+                $time = sprintf('%d个月', $monthNum);
+                break;
+            case 'd':
+                $time = sprintf('%d天', ceil((time() - $start) / (24 * 3600)));
+                break;
+            case 'h':
+                $time = sprintf('%d个小时', ceil((time() - $start) / 3600));
+                break;
+        }
+
+        return $time;
     }
 }

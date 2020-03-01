@@ -38,6 +38,7 @@ class ComposerStaticInit99b73a665e0d2066a2cb8dd066883cba
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
             'Predis\\' => 7,
+            'PhpOption\\' => 10,
             'PHPMailer\\PHPMailer\\' => 20,
         ),
         'O' => 
@@ -139,6 +140,10 @@ class ComposerStaticInit99b73a665e0d2066a2cb8dd066883cba
         array (
             0 => __DIR__ . '/..' . '/predis/predis/src',
         ),
+        'PhpOption\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
+        ),
         'PHPMailer\\PHPMailer\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
@@ -239,13 +244,16 @@ class ComposerStaticInit99b73a665e0d2066a2cb8dd066883cba
         ),
         'P' => 
         array (
-            'PhpOption\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/phpoption/phpoption/src',
-            ),
             'PHPQRCode' => 
             array (
                 0 => __DIR__ . '/..' . '/aferrandini/phpqrcode/lib',
+            ),
+        ),
+        'C' => 
+        array (
+            'Colors' => 
+            array (
+                0 => __DIR__ . '/..' . '/kevinlebrun/colors.php/src',
             ),
         ),
     );
