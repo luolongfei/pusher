@@ -21,6 +21,26 @@ class Argv
      */
     public $allArgvs = [];
 
+    public function __construct()
+    {
+        if ($this->get('help') || $this->get('h')) {
+            $desc = <<<FLL
+Description
+Params:
+-c: <string> 指定要实例化的类名。默认调用Pusher类
+-m: <string> 指定要调用的方法名（不支持静态方法）。默认调用handle方法
+-h: 显示说明
+
+Example: 
+$ php run -c=Pusher -m=handle
+$ php run -c=BirthdayReminder
+
+FLL;
+            echo $desc;
+            exit(0);
+        }
+    }
+
     /**
      * @return Argv
      */
