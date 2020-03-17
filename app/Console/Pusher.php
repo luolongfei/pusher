@@ -225,20 +225,6 @@ class Pusher extends Base
                 } else if ($message['fromType'] === 'Self') {
                     // TODO 处理自己的命令
                 }
-
-                // TODO 处理消息撤回，vbot封装的方法已失效
-                /*if ($message['type'] === 'recall') {
-                    Text::send('filehelper', $message['content'] . ' : ' . $message['origin']['content']);
-                    if ($message['origin']['type'] === 'image') {
-                        Image::send('filehelper', $message['origin']);
-                    } elseif ($message['origin']['type'] === 'emoticon') {
-                        Emoticon::send('filehelper', $message['origin']);
-                    } elseif ($message['origin']['type'] === 'video') {
-                        Video::send('filehelper', $message['origin']);
-                    } elseif ($message['origin']['type'] === 'voice') {
-                        Voice::send('filehelper', $message['origin']);
-                    }
-                }*/
             } catch (\Exception $e) {
                 Log::error('收到消息处理时发生错误: ' . $e->getMessage());
             }
