@@ -176,11 +176,6 @@ class Pusher extends Base
                     // TODO 正则检查是否回复的1或降价提醒，如果是，通过发送者的username去redis查询，若有数据，将status改为1，过期时间改为永久
                     // TODO 新加的batch，常驻专门读取redis中status=1的数据，拿url取得最新价格与现有价格做对比，低于现有价格，就给username发微信
 
-
-                    /*if (preg_match('/^(?:1+|降价提醒)$/', $message['message'])) {
-
-                    }*/
-
                     // 检查是否商品地址
                     $url = CatDiscount::goodsUrlCheck($message['message']);
                     if ($url) {
